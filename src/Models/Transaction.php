@@ -117,4 +117,9 @@ class Transaction extends Model
             in_array($type, config('wallet.adding_transaction_types', []));
     }
 
+    public function getTotalAmount()
+    {
+        return $this->amount + $this->children()->get()->sum('amount');
+    }
+
 }

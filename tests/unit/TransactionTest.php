@@ -119,5 +119,22 @@ class TransactionTest extends TestCase
         });
     }
 
+    /** @test */
+    public function get_total_amount()
+    {
+        $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 8;
+        $this->assertEquals(-$price, $transaction->getTotalAmount());
+        $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 8;
+        $this->assertEquals($price, $transaction->getTotalAmount());
+        $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 2;
+        $this->assertEquals($price, $transaction->getTotalAmount());
+    }
+
 }
 
