@@ -1,7 +1,8 @@
 # Laravel Wallet
 
-In a few projects I had to implement a virtual currency. The user would buy packs of credits with Stripe and then use them in the app in exchange of services or goods.
-This package is a small and simple implementation of this concept with place for customization.
+Some apps require a prepayment system like a virtual wallet where customers can recharge credits which they can then use to pay in app stuff.
+With this package you can equip your eloquent models with one or multiple digital wallets that handle that for you. 
+All the wallet activities are tracked with transactions.
 
 ## Installation
 
@@ -76,6 +77,7 @@ $user->wallet->deposit(100, ['stripe_source' => 'ch_BEV2Iih1yzbf4G3HNsfOQ07h', '
 $user->wallet->withdraw(10, ['description' => 'Purchase of Item #1234']);
 ```
 ## Testing
+
 This package makes use of https://github.com/orchestral/testbench to create a
 laravel testing environment.
 The tests will execute with a pre-configured in-memory sqlite database, so you don't need setup a database on your own.
