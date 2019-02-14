@@ -35,7 +35,7 @@ class Transaction extends Model
     }
 
     /**
-     * Retrieve the wallet from this transaction
+     * Retrieve the wallet of this transaction
      */
     public function wallet()
     {
@@ -119,7 +119,9 @@ class Transaction extends Model
 
     public function getTotalAmount()
     {
-        $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first()->getAttributes()['total_amount'];//$this->amount + $this->children()->get()->sum('amount');
+        // $totalAmount = $this->amount + $this->children()->get()->sum('amount');
+        $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first();
+        $totalAmount = $totalAmount ? array_get($totalAmount->getAttributes(), 'total_amount') : null;
         \Log::debug($totalAmount);
         $this->attributes['total_amount'] = $totalAmount;
         return $totalAmount;

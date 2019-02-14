@@ -3,24 +3,26 @@
     "description": "Easy to use virtual wallet for your app",
     "keywords": [
         "depsimon",
+        "mannikj",
         "laravel-wallet",
         "virtual",
         "currency",
         "credits",
-        "wallet"
+        "wallet",
+        "payment"
     ],
     "homepage": "https://github.com/mannikj/laravel-wallet",
     "license": "MIT",
     "authors": [
         {
-            "name": "Simon Depelchin",
-            "email": "simon@webartisan.be",
-            "homepage": "https://webartisan.be",
+            "name": "Jannik Malken",
+            "email": "mannikj@web.de",
             "role": "Developer"
         },
         {
-            "name": "Jannik Malken",
-            "email": "mannikj@web.de",
+            "name": "Simon Depelchin",
+            "email": "simon@webartisan.be",
+            "homepage": "https://webartisan.be",
             "role": "Developer"
         }
     ],
