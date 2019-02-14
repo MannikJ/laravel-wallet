@@ -77,7 +77,7 @@ class TransactionTest extends TestCase
     }
 
     /** @test */
-    public function delete()
+    public function delete_model()
     {
         $transaction = factory(Transaction::class)->create(['amount' => 20, 'type' => 'deposit']);
         $this->assertEquals(20, $transaction->wallet->refresh()->balance);
@@ -122,6 +122,16 @@ class TransactionTest extends TestCase
     /** @test */
     public function get_total_amount()
     {
+        $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 2;
+        $this->assertEquals($price, $transaction->getTotalAmount());
+        $this->assertEquals($price, $transaction->getAttributes()['total_amount']);
+        $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = -2;
+        $this->assertEquals($price, $transaction->getTotalAmount());
+        $this->assertEquals($price, $transaction->getAttributes()['total_amount']);
         $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
         $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
         $price = 8;
@@ -129,11 +139,55 @@ class TransactionTest extends TestCase
         $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
         $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
         $price = 8;
+
         $this->assertEquals($price, $transaction->getTotalAmount());
+    }
+
+    /** @test */
+    public function scope_select_total_amount()
+    {
         $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
         $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
         $price = 2;
-        $this->assertEquals($price, $transaction->getTotalAmount());
+        $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
+        $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = -2;
+        $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
+        $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 8;
+        $this->assertEquals(-$price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
+        $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 8;
+        $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
+    }
+
+    /** @test */
+    public function get_total_amount_attribute()
+    {
+        $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 2;
+        $this->assertEquals($price, $transaction->getTotalAmountAttribute());
+        $this->assertEquals($price, $transaction->total_amount);
+        $this->assertEquals(4, Transaction::count());
+        $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = -2;
+        $this->assertEquals($price, $transaction->getTotalAmountAttribute());
+        $this->assertEquals($price, $transaction->total_amount);
+        $transaction = factory(Transaction::class)->states('withdraw')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('withdraw')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = -8;
+        $this->assertEquals($price, $transaction->getTotalAmountAttribute());
+        $this->assertEquals($price, $transaction->total_amount);
+        $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
+        $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
+        $price = 8;
+        $this->assertEquals($price, $transaction->getTotalAmountAttribute());
+        $this->assertEquals($price, $transaction->total_amount);
     }
 
 }

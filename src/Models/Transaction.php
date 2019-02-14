@@ -101,7 +101,7 @@ class Transaction extends Model
 
     public function getAmountWithSign($amount = null, $type = null)
     {
-        $amount = $amount ? : $this->attributes['amount'];
+        $amount = $amount ? : array_get($this->attributes, 'amount');
         $type = $type ? : $this->type;
         $amount = $this->shouldConvertToAbsoluteAmount() ? abs($amount) : $amount;
         if (in_array($type, config('wallet.subtracting_transaction_types', []))) {
@@ -119,7 +119,76 @@ class Transaction extends Model
 
     public function getTotalAmount()
     {
-        return $this->amount + $this->children()->get()->sum('amount');
+        $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first()->getAttributes()['total_amount'];//$this->amount + $this->children()->get()->sum('amount');
+        \Log::debug($totalAmount);
+        $this->attributes['total_amount'] = $totalAmount;
+        return $totalAmount;
     }
+
+    public static function getSignedAmountRawSql($table = null)
+    {
+        $table = $table ? : (new static())->getTable();
+        $subtractingTypes = implode(',', array_map(
+            function ($type) {
+                return "'{$type}'";
+            },
+            config('wallet.subtracting_transaction_types')
+        ));
+        $addingTypes = implode(',', array_map(
+            function ($type) {
+                return "'{$type}'";
+            },
+            config('wallet.adding_transaction_types')
+        ));
+        return "CASE
+                WHEN {$table}.type
+                    IN ({$addingTypes})
+                    THEN abs({$table}.amount)
+                WHEN {$table}.type
+                    IN ({$subtractingTypes})
+                    THEN abs({$table}.amount)*-1
+                ELSE {$table}.amount
+                END";
+    }
+
+    public static function getChildTotalAmountRawSql($table = 'children')
+    {
+        $signedAmountRawSql = static::getSignedAmountRawSql($table);
+        $transactionsTable = (new static())->getTable();
+        return "IFNULL((
+                    SELECT sum({$signedAmountRawSql})
+                    FROM {$transactionsTable} AS {$table}
+                    WHERE {$table}.origin_id = {$transactionsTable}.id
+                ),0)";
+    }
+
+    public static function getTotalAmountRawSql()
+    {
+        // TODO: total_amount cannot be queried in where
+        $signedAmountRawSql = static::getSignedAmountRawSql();
+        $childTotalAmount = static::getChildTotalAmountRawSql();
+        return "(
+                    IFNULL(
+                        (
+                            SELECT {$signedAmountRawSql}
+                        ),0
+                    )
+                    +
+                    {$childTotalAmount}
+                )";
+    }
+
+    public function scopeSelectTotalAmount($query)
+    {
+        return $query->addSelect(\DB::raw($this->getTotalAmountRawSql() . 'AS total_amount'));
+    }
+
+
+    public function getTotalAmountAttribute()
+    {
+        $totalAmount = array_get($this->attributes, 'total_amount', $this->getTotalAmount());
+        return $totalAmount;
+    }
+
 
 }
