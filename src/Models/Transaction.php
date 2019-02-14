@@ -122,7 +122,6 @@ class Transaction extends Model
         // $totalAmount = $this->amount + $this->children()->get()->sum('amount');
         $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first();
         $totalAmount = $totalAmount ? array_get($totalAmount->getAttributes(), 'total_amount') : null;
-        \Log::debug($totalAmount);
         $this->attributes['total_amount'] = $totalAmount;
         return $totalAmount;
     }
