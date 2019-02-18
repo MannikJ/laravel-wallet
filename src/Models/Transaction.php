@@ -160,6 +160,7 @@ class Transaction extends Model
                     SELECT sum({$signedAmountRawSql})
                     FROM {$transactionsTable} AS {$table}
                     WHERE {$table}.origin_id = {$transactionsTable}.id
+                    AND {$table}.deleted_at IS NULL
                 ),0)";
     }
 

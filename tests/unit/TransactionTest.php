@@ -139,7 +139,9 @@ class TransactionTest extends TestCase
         $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
         $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
         $price = 8;
-
+        $this->assertEquals($price, $transaction->getTotalAmount());
+        $children->first()->delete();
+        $price = 7;
         $this->assertEquals($price, $transaction->getTotalAmount());
     }
 
@@ -161,6 +163,9 @@ class TransactionTest extends TestCase
         $transaction = factory(Transaction::class)->states('deposit')->create(['amount' => '5']);
         $children = factory(Transaction::class, 3)->states('deposit')->create(['amount' => '1', 'origin_id' => $transaction->id]);
         $price = 8;
+        $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
+        $children->first()->delete();
+        $price = 7;
         $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
     }
 
