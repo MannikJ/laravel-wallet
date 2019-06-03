@@ -1,6 +1,6 @@
 <?php
 
-namespace Depsimon\Wallet\Models;
+namespace MannikJ\Laravel\Wallet\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

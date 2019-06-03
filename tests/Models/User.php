@@ -1,9 +1,9 @@
 <?php
 
-namespace Depsimon\Wallet\Tests\Models;
+namespace MannikJ\Laravel\Wallet\Tests\Models;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
-use Depsimon\Wallet\Traits\HasWallet;
+use MannikJ\Laravel\Wallet\Traits\HasWallet;
 
 class User extends AuthUser
 {

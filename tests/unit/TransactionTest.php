@@ -1,12 +1,12 @@
 <?php
 
-namespace Depsimon\Wallet\Tests\Unit;
+namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
-use Depsimon\Wallet\Models\Wallet;
-use Depsimon\Wallet\Exceptions\UnacceptedTransactionException;
-use Depsimon\Wallet\Tests\TestCase;
-use Depsimon\Wallet\Tests\Models\User;
-use Depsimon\Wallet\Models\Transaction;
+use MannikJ\Laravel\Wallet\Models\Wallet;
+use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
+use MannikJ\Laravel\Wallet\Tests\TestCase;
+use MannikJ\Laravel\Wallet\Tests\Models\User;
+use MannikJ\Laravel\Wallet\Models\Transaction;
 use Illuminate\Support\Collection;
 
 class TransactionTest extends TestCase

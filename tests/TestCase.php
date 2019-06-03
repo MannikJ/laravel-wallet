@@ -1,9 +1,9 @@
 <?php
 
-namespace Depsimon\Wallet\Tests;
+namespace MannikJ\Laravel\Wallet\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Depsimon\Wallet\WalletServiceProvider;
+use MannikJ\Laravel\Wallet\WalletServiceProvider;
 
 class TestCase extends BaseTestCase
 {

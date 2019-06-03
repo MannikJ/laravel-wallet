@@ -1,5 +1,5 @@
 {
-    "name": "depsimon/laravel-wallet",
+    "name": "mannikj/laravel-wallet",
     "description": "Easy to use virtual wallet for your app",
     "keywords": [
         "depsimon",
@@ -39,12 +39,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Depsimon\\Wallet\\": "src"
+            "MannikJ\\Laravel\\Wallet\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Depsimon\\Wallet\\Tests\\": "tests"
+            "MannikJ\\Laravel\\Wallet\\Tests\\": "tests"
         }
     },
     "config": {
@@ -53,10 +53,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Depsimon\\Wallet\\WalletServiceProvider"
+                "MannikJ\\Laravel\\Wallet\\WalletServiceProvider"
             ],
             "aliases": {
-                "Wallet": "Depsimon\\Wallet\\WalletFacade"
+                "Wallet": "MannikJ\\Laravel\\Wallet\\WalletFacade"
             }
         }
     },

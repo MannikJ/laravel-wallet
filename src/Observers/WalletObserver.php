@@ -1,10 +1,10 @@
 <?php
 
-namespace Depsimon\Wallet\Observers;
+namespace MannikJ\Laravel\Wallet\Observers;
 
-use Depsimon\Wallet\Models\Wallet;
-use Depsimon\Wallet\Models\Transaction;
-use Depsimon\Wallet\Jobs\RecalculateWalletBalance;
+use MannikJ\Laravel\Wallet\Models\Wallet;
+use MannikJ\Laravel\Wallet\Models\Transaction;
+use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
 
 class WalletObserver
 {

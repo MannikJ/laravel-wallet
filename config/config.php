@@ -1,6 +1,6 @@
 <?php
-use Depsimon\Wallet\Models\Wallet;
-use Depsimon\Wallet\Models\Transaction;
+use MannikJ\Laravel\Wallet\Models\Wallet;
+use MannikJ\Laravel\Wallet\Models\Transaction;
 
 return [
 /**

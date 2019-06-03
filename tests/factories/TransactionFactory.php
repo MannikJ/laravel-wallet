@@ -1,8 +1,8 @@
 <?php
 
 use Faker\Generator as Faker;
-use Depsimon\Wallet\Models\Transaction;
-use Depsimon\Wallet\Models\Wallet;
+use MannikJ\Laravel\Wallet\Models\Transaction;
+use MannikJ\Laravel\Wallet\Models\Wallet;
 
 // $factory->define(Transaction::class, function (Faker $faker, $attributes) {
 //     $wallet = array_has($attributes, 'wallet_id')

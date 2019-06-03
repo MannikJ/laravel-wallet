@@ -1,7 +1,7 @@
 # Laravel Wallet
 
 Some apps require a prepayment system like a virtual wallet where customers can recharge credits which they can then use to pay in app stuff.
-With this package you can equip your eloquent models with one or multiple digital wallets that handle that for you. 
+With this package you can equip your eloquent models with one or multiple digital wallets that handle that for you.
 All the wallet activities are tracked with transactions.
 
 ## Installation
@@ -9,7 +9,7 @@ All the wallet activities are tracked with transactions.
 Install the package with composer:
 
 ```bash
-composer require depsimon/laravel-wallet
+composer require mannikj/laravel-wallet
 ```
 
 ## Run Migrations
@@ -21,7 +21,7 @@ If you want more flexibility, you can publish the migration files to your own
 migration directory with the following artisan command:
 
 ```bash
-php artisan vendor:publish --provider="Depsimon\Wallet\WalletServiceProvider" --tag=migrations
+php artisan vendor:publish --provider="MannikJ\Laravel\Wallet\WalletServiceProvider" --tag=migrations
 ```
 Make sure to deactivate automatic migration loadingby setting
 the config variable `load_migrations` to false when you have
@@ -32,7 +32,7 @@ published the migration file.
 You can publish the config file with this artisan command:
 
 ```bash
-php artisan vendor:publish --provider="Depsimon\Wallet\WalletServiceProvider" --tag=config
+php artisan vendor:publish --provider="MannikJ\Laravel\Wallet\WalletServiceProvider" --tag=config
 ```
 
 This will merge the `wallet.php` config file where you can specify the Users, Wallets & Transactions classes if you have custom ones.
@@ -43,7 +43,7 @@ Add the `HasWallet` trait to your User model.
 
 ``` php
 
-use Depsimon\Wallet\Traits\HasWallet;
+use MannikJ\Laravel\Wallet\Traits\HasWallet;
 
 class User extends Model
 {
@@ -82,15 +82,23 @@ This package makes use of https://github.com/orchestral/testbench to create a
 laravel testing environment.
 The tests will execute with a pre-configured in-memory sqlite database, so you don't need setup a database on your own.
 
-To run the tests just make sure to install the dependencies via `composer install` first and then execute either `vendor/bin/phpunit` or `composer test` from within the project root directory.
+To run the phpunit tests just make sure to install the package dependencies first via
+
+`composer install`
+
+Then execute from within the project root directory
+
+`composer test`
+
 
 ## Security
 
-If you discover any security related issues, please email simon@webartisan.be instead of using the issue tracker.
+If you discover any security related issues, open an issue on the [github repository](https://github.com/MannikJ/laravel-wallet/issues).
 
 ## Credits
 
-- [Simon Depelchin](https://github.com/depsimon)
+- [Simon Depelchin](https://github.com/depsimon) (forked from [despimon/laravel-wallet](https://github.com/depsimon/laravel-wallet))
+- [MannikJ](https://github.com/mannikj)
 
 ## License
 

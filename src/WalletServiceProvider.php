@@ -1,12 +1,12 @@
 <?php
 
-namespace Depsimon\Wallet;
+namespace MannikJ\Laravel\Wallet;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\Carbon;
-use Depsimon\Wallet\Observers\WalletObserver;
-use Depsimon\Wallet\Observers\TransactionObserver;
+use MannikJ\Laravel\Wallet\Observers\WalletObserver;
+use MannikJ\Laravel\Wallet\Observers\TransactionObserver;
 
 class WalletServiceProvider extends ServiceProvider
 {

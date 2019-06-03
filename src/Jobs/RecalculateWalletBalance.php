@@ -1,13 +1,13 @@
 <?php
 
-namespace Depsimon\Wallet\Jobs;
+namespace MannikJ\Laravel\Wallet\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Depsimon\Wallet\Models\Wallet;
+use MannikJ\Laravel\Wallet\Models\Wallet;
 use Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Queue\Jobs\Job;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Depsimon\Wallet\Exceptions;
+namespace MannikJ\Laravel\Wallet\Exceptions;
 
 use Exception;
-use Depsimon\Wallet\Models\Transaction;
+use MannikJ\Laravel\Wallet\Models\Transaction;
 
 class UnacceptedTransactionException extends Exception
 {

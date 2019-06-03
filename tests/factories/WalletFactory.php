@@ -1,8 +1,8 @@
 <?php
 
 use Faker\Generator as Faker;
-use Depsimon\Wallet\Models\Wallet;
-use Depsimon\Wallet\Tests\Models\User;
+use MannikJ\Laravel\Wallet\Models\Wallet;
+use MannikJ\Laravel\Wallet\Tests\Models\User;
 
 $factory->define(Wallet::class, function (Faker $faker, $attributes) {
     $owner = array_has($attributes, 'owner_id')
