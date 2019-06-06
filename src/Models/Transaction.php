@@ -101,8 +101,8 @@ class Transaction extends Model
 
     public function getAmountWithSign($amount = null, $type = null)
     {
-        $amount = $amount ? : array_get($this->attributes, 'amount');
-        $type = $type ? : $this->type;
+        $amount = $amount ?: array_get($this->attributes, 'amount');
+        $type = $type ?: $this->type;
         $amount = $this->shouldConvertToAbsoluteAmount() ? abs($amount) : $amount;
         if (in_array($type, config('wallet.subtracting_transaction_types', []))) {
             return $amount * -1;
@@ -112,9 +112,9 @@ class Transaction extends Model
 
     public function shouldConvertToAbsoluteAmount($type = null)
     {
-        $type = $type ? : $this->type;
-        return in_array($type, config('wallet.subtracting_transaction_types', [])) ||
-            in_array($type, config('wallet.adding_transaction_types', []));
+        $type = $type ?: $this->type;
+        return in_array($type, \Wallet::subtractingTransactionTypes()) ||
+            in_array($type, \Wallet::addingTransactionTypes());
     }
 
     public function getTotalAmount()
@@ -128,18 +128,18 @@ class Transaction extends Model
 
     public static function getSignedAmountRawSql($table = null)
     {
-        $table = $table ? : (new static())->getTable();
+        $table = $table ?: (new static())->getTable();
         $subtractingTypes = implode(',', array_map(
             function ($type) {
                 return "'{$type}'";
             },
-            config('wallet.subtracting_transaction_types')
+            \Wallet::subtractingTransactionTypes()
         ));
         $addingTypes = implode(',', array_map(
             function ($type) {
                 return "'{$type}'";
             },
-            config('wallet.adding_transaction_types')
+            \Wallet::addingTransactionTypes()
         ));
         return "CASE
                 WHEN {$table}.type
@@ -191,6 +191,4 @@ class Transaction extends Model
         $totalAmount = array_get($this->attributes, 'total_amount', $this->getTotalAmount());
         return $totalAmount;
     }
-
-
 }

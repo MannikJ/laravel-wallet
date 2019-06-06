@@ -17,6 +17,7 @@ class RecalculateWalletBalance implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $wallet;
+
     const CACHE_PREFIX = 'recalculate:wallet:';
 
 

@@ -56,7 +56,7 @@
                 "MannikJ\\Laravel\\Wallet\\WalletServiceProvider"
             ],
             "aliases": {
-                "Wallet": "MannikJ\\Laravel\\Wallet\\WalletFacade"
+                "Wallet": "MannikJ\\Laravel\\Wallet\\Facades\\WalletFacade"
             }
         }
     },

@@ -5,7 +5,6 @@ namespace MannikJ\Laravel\Wallet\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Exception;
 use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
 
 class Wallet extends Model
@@ -164,17 +163,14 @@ class Wallet extends Model
     public function actualBalance(bool $save = false)
     {
         $undefined = $this->transactions()
-            ->whereNotIn('type', array_merge(
-                config('wallet.adding_transaction_types'),
-                config('wallet.subtracting_transaction_types')
-            ))
+            ->whereNotIn('type', \Wallet::biasedTransactionTypes())
             ->sum('amount');
         $credits = $this->transactions()
-            ->whereIn('type', config('wallet.adding_transaction_types'))
+            ->whereIn('type', \Wallet::addingTransactionTypes())
             ->sum(\DB::raw('abs(amount)'));
 
         $debits = $this->transactions()
-            ->whereIn('type', config('wallet.subtracting_transaction_types'))
+            ->whereIn('type', \Wallet::subtractingTransactionTypes())
             ->sum(\DB::raw('abs(amount)'));
         $balance = $undefined + $credits - $debits;
 
@@ -184,5 +180,4 @@ class Wallet extends Model
         }
         return $balance;
     }
-
 }

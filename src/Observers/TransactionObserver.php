@@ -2,9 +2,6 @@
 
 namespace MannikJ\Laravel\Wallet\Observers;
 
-use MannikJ\Laravel\Wallet\Models\Wallet;
-use MannikJ\Laravel\Wallet\Models\Transaction;
-
 class TransactionObserver
 {
     public function creating($transaction)

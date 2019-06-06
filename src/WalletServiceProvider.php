@@ -3,10 +3,9 @@
 namespace MannikJ\Laravel\Wallet;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
-use Illuminate\Support\Carbon;
 use MannikJ\Laravel\Wallet\Observers\WalletObserver;
 use MannikJ\Laravel\Wallet\Observers\TransactionObserver;
+use MannikJ\Laravel\Wallet\Services\Wallet;
 
 class WalletServiceProvider extends ServiceProvider
 {
@@ -37,5 +36,9 @@ class WalletServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'wallet');
+
+        $this->app->singleton('wallet', function () {
+            return new Wallet;
+        });
     }
 }

@@ -4,6 +4,7 @@ namespace MannikJ\Laravel\Wallet\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use MannikJ\Laravel\Wallet\WalletServiceProvider;
+use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 
 class TestCase extends BaseTestCase
 {
@@ -22,6 +23,13 @@ class TestCase extends BaseTestCase
     {
         return [
             WalletServiceProvider::class
+        ];
+    }
+
+    protected function getPackageAliases()
+    {
+        return [
+            'Wallet' => WalletFacade::class
         ];
     }
 }
