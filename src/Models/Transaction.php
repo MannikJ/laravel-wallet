@@ -4,6 +4,7 @@ namespace MannikJ\Laravel\Wallet\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 
 class Transaction extends Model
 {
@@ -101,7 +102,7 @@ class Transaction extends Model
 
     public function getAmountWithSign($amount = null, $type = null)
     {
-        $amount = $amount ?: array_get($this->attributes, 'amount');
+        $amount = $amount ?: Arr::get($this->attributes, 'amount');
         $type = $type ?: $this->type;
         $amount = $this->shouldConvertToAbsoluteAmount() ? abs($amount) : $amount;
         if (in_array($type, config('wallet.subtracting_transaction_types', []))) {
@@ -121,7 +122,7 @@ class Transaction extends Model
     {
         // $totalAmount = $this->amount + $this->children()->get()->sum('amount');
         $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first();
-        $totalAmount = $totalAmount ? array_get($totalAmount->getAttributes(), 'total_amount') : null;
+        $totalAmount = $totalAmount ? Arr::get($totalAmount->getAttributes(), 'total_amount') : null;
         $this->attributes['total_amount'] = $totalAmount;
         return $totalAmount;
     }
@@ -188,7 +189,7 @@ class Transaction extends Model
 
     public function getTotalAmountAttribute()
     {
-        $totalAmount = array_get($this->attributes, 'total_amount', $this->getTotalAmount());
+        $totalAmount = Arr::get($this->attributes, 'total_amount', $this->getTotalAmount());
         return $totalAmount;
     }
 }

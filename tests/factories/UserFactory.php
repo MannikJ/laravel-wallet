@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 use MannikJ\Laravel\Wallet\Tests\Models\User;
 
@@ -8,6 +9,6 @@ $factory->define(User::class, function (Faker $faker) {
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'password' => bcrypt('test'),
-        'remember_token' => str_random(10),
+        'remember_token' => Str::random(10),
     ];
 });

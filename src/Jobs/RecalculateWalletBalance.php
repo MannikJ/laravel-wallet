@@ -8,9 +8,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use MannikJ\Laravel\Wallet\Models\Wallet;
-use Cache;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Queue\Jobs\Job;
 
 class RecalculateWalletBalance implements ShouldQueue
 {

@@ -24,7 +24,7 @@ use MannikJ\Laravel\Wallet\Models\Wallet;
 
 $factory->define(config('wallet.transaction_model'), function (Faker $faker, $attributes) {
     $walletModel = config('wallet.wallet_model');
-    $wallet = array_has($attributes, 'wallet_id')
+    $wallet = Arr::has($attributes, 'wallet_id')
         ? $walletModel::findOrFail($attributes['wallet_id'])
         : ($walletModel::first() ? : factory($walletModel)->create());
     $type = $faker->randomElement([
