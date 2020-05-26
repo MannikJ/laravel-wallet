@@ -18,7 +18,7 @@ class TransactionObserver
 
     public function updated($transaction)
     {
-        $oldAmountWithSign = $transaction->getAmountWithSign($transaction->getOriginal('amount'), $transaction->getOriginal('type'));
+        $oldAmountWithSign = $transaction->getAmountWithSign($transaction->getRawOriginal('amount'), $transaction->getRawOriginal('type'));
         if ($oldAmountWithSign != $transaction->amount) {
             // revert old balance
             $transaction->wallet->balance -= $oldAmountWithSign;
