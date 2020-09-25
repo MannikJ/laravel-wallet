@@ -9,6 +9,9 @@ use MannikJ\Laravel\Wallet\Tests\Models\User;
 use MannikJ\Laravel\Wallet\Models\Transaction;
 use Illuminate\Support\Collection;
 use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
+use MannikJ\Laravel\Wallet\Tests\Factories\TransactionFactory;
+use MannikJ\Laravel\Wallet\Tests\Factories\UserFactory;
+use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
 
 class WalletTest extends TestCase
 {
@@ -16,14 +19,14 @@ class WalletTest extends TestCase
     /** @test */
     public function owner()
     {
-        $wallet = factory(Wallet::class)->create();
+        $wallet = WalletFactory::new()->create();
         $this->assertInstanceOf(User::class, $wallet->owner);
     }
 
     /** @test */
     public function delete_and_restore_wallet()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $transaction = $user->wallet->deposit(10);
         $wallet = $user->wallet;
         $this->assertEquals(1, $wallet->id);
@@ -46,7 +49,7 @@ class WalletTest extends TestCase
     /** @test */
     public function deposit()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertFalse($user->wallet->exists());
         $transaction = $user->wallet->deposit(10);
         $this->assertTrue($user->wallet->exists());
@@ -68,7 +71,7 @@ class WalletTest extends TestCase
     /** @test */
     public function deposit_negative_amount()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertFalse($user->wallet->exists);
         $transaction = $user->wallet->failDeposit(-30);
         $this->assertTrue($transaction->trashed());
@@ -80,7 +83,7 @@ class WalletTest extends TestCase
     /** @test */
     public function fail_deposit()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertFalse($user->wallet->exists);
         $transaction = $user->wallet->failDeposit(10000);
         $this->assertTrue($transaction->trashed());
@@ -92,7 +95,7 @@ class WalletTest extends TestCase
     /** @test */
     public function force_withdraw()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertFalse($user->wallet->exists);
         $transaction = $user->wallet->forceWithdraw(10000);
         $this->assertTrue($transaction->exists);
@@ -105,7 +108,7 @@ class WalletTest extends TestCase
     /** @test */
     public function can_withdraw()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertFalse($user->wallet->exists);
         $this->assertFalse($user->wallet->canWithdraw());
         $this->assertFalse($user->wallet->canWithdraw(1));
@@ -122,7 +125,7 @@ class WalletTest extends TestCase
     /** @test */
     public function withdraw()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertFalse($user->wallet->exists);
         $this->expectException(UnacceptedTransactionException::class);
         $user->wallet->withdraw(10);
@@ -137,7 +140,7 @@ class WalletTest extends TestCase
     /** @test */
     function set_balance()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         $this->assertEquals(0, $user->balance);
         $offsetTransaction = $user->wallet->setBalance(0);
         $this->assertEquals(null, $offsetTransaction);
@@ -161,9 +164,19 @@ class WalletTest extends TestCase
     /** @test */
     function actual_balance()
     {
-        $user = factory(User::class)->create();
-        $transactions = factory(Transaction::class, 10)->create(['amount' => 50, 'type' => 'deposit']);
-        $transactions = factory(Transaction::class, 10)->create(['amount' => 25, 'type' => 'withdraw']);#
+        $wallet = WalletFactory::new()->create();
+        $user = $wallet->owner;
+        $transactions = TransactionFactory::new()->count(10)->create([
+            'wallet_id' => $wallet->id,
+            'amount' => 50,
+            'type' => 'deposit'
+        ]);
+        $transactions = TransactionFactory::new()->count(10)->create([
+            'wallet_id' => $wallet->id,
+            'amount' => 25,
+            'type' => 'withdraw'
+        ]);
+        // dd($transactions->first());
         $expectedBalance = 10 * 50 - 10 * 25;
         $this->assertEquals($expectedBalance, $user->balance);
         $this->assertEquals($expectedBalance, $user->wallet->balance);
@@ -174,7 +187,7 @@ class WalletTest extends TestCase
     /** @test */
     function balance_change_doesnt_trigger_recalculation()
     {
-        $wallet = factory(Wallet::class)->create();
+        $wallet = WalletFactory::new()->create();
         $this->doesntExpectJobs(RecalculateWalletBalance::class);
         $wallet->balance = 10;
         $wallet->save();
@@ -183,23 +196,23 @@ class WalletTest extends TestCase
     /** @test */
     function balance_change_triggers_recalculation_if_activated()
     {
-        $wallet = factory(Wallet::class)->create();
+        $wallet = WalletFactory::new()->create();
         config(['auto_recalculate_balance' => true]);
         $this->expectsJobs(RecalculateWalletBalance::class);
         $wallet->balance = -10;
         $wallet->save();
-
     }
 
     /** @test */
     function recalculation_performance()
     {
-        $user = factory(User::class)->create();
+        $user = UserFactory::new()->create();
         Transaction::flushEventListeners();
         $numbers = [1, 10, 100, 1000, 10000];
         $result = collect($numbers)->mapWithKeys(function ($number) use ($user) {
             $alreadyExist = Transaction::count();
-            $transactions = factory(Transaction::class, $number - $alreadyExist)->create(['hash' => uniqid()]);
+            $transactions = TransactionFactory::new()->count($number - $alreadyExist)
+                ->create(['hash' => uniqid()]);
             $start = microtime(true);
             $actualBalance = $user->wallet->actualBalance();
             return [$number => microtime(true) - $start];
@@ -207,5 +220,4 @@ class WalletTest extends TestCase
         $this->assertTrue(true);
         \Log::info($result);
     }
-
 }

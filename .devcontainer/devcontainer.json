@@ -1,0 +1,20 @@
+{
+    "name": "Laradock",
+    "dockerComposeFile": ["../../laradock/docker-compose.yml"],
+    "runArgs": ["--env-file", "../../laradock/.env"],
+    "service": "workspace",
+    "workspaceFolder": "/var/www/laravel-wallet",
+    "extensions": [
+      "dotjoshjohnson.xml",
+      "ryu1kn.partial-diff",
+      "artdiniz.quitcontrol-vscode",
+      "emallin.phpunit",
+      "eamodio.gitlens",
+      "onecentlin.laravel-extension-pack",
+      "sdras.vue-vscode-extensionpack",
+      "fknop.vscode-npm"
+    ],
+    "remoteUser": "laradock",
+    "shutdownAction": "none",
+    "runServices": ["mysql", "redis", "nginx"]
+  }

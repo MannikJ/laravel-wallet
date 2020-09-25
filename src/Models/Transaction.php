@@ -2,6 +2,7 @@
 
 namespace MannikJ\Laravel\Wallet\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
@@ -9,6 +10,7 @@ use Illuminate\Support\Arr;
 class Transaction extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $table = 'wallet_transactions';
 
