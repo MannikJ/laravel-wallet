@@ -27,14 +27,14 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
-        "illuminate/support": "^7.0"
+        "php": "^7.3|^8.0",
+        "illuminate/support": "^7.0|^8.0",
+        "laravel/legacy-factories": "^1.1"
     },
     "require-dev": {
         "doctrine/dbal": "^2.9",
-        "mockery/mockery": "^1.1",
-        "orchestra/testbench": "^5.0",
-        "phpunit/phpunit": "^9.0"
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.3"
     },
     "autoload": {
         "psr-4": {

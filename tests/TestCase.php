@@ -26,7 +26,7 @@ class TestCase extends BaseTestCase
         ];
     }
 
-    protected function getPackageAliases()
+    protected function getPackageAliases($app)
     {
         return [
             'Wallet' => WalletFacade::class
