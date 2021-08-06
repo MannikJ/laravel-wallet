@@ -2,6 +2,7 @@
 
 namespace MannikJ\Laravel\Wallet\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -10,6 +11,7 @@ use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
 class Wallet extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $attributes = [
         'balance' => 0,

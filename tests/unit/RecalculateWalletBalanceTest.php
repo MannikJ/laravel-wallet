@@ -10,6 +10,7 @@ use MannikJ\Laravel\Wallet\Models\Transaction;
 use Illuminate\Support\Collection;
 use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
 use MannikJ\Laravel\Wallet\DebouncedJob;
+use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
 
 class RecalculateWalletBalanceTest extends TestCase
 {
@@ -17,7 +18,7 @@ class RecalculateWalletBalanceTest extends TestCase
     public function dispatch()
     {
         config(['auto_recalculate_balance' => true]);
-        $wallet = factory(Wallet::class)->create();
+        $wallet = WalletFactory::new()->create();
         Transaction::flushEventListeners();
         $transaction = $wallet->transactions()->make(['type' => 'deposit', 'amount' => 10]);
         $transaction->hash = uniqid();
