@@ -2,6 +2,8 @@
 
 namespace MannikJ\Laravel\Wallet\Observers;
 
+use MannikJ\Laravel\Wallet\Models\Transaction;
+
 class TransactionObserver
 {
     public function creating($transaction)
@@ -9,29 +11,13 @@ class TransactionObserver
         $transaction->hash = uniqid();
     }
 
-    public function created($transaction)
+    public function saved(Transaction $transaction)
     {
-        $transaction->wallet->balance += $transaction->amount;
-        $transaction->wallet->save();
+        $transaction->wallet->actualBalance(true);
     }
 
-
-    public function updated($transaction)
+    public function deleted(Transaction $transaction)
     {
-        $oldAmountWithSign = $transaction->getAmountWithSign($transaction->getRawOriginal('amount'), $transaction->getRawOriginal('type'));
-        if ($oldAmountWithSign != $transaction->amount) {
-            // revert old balance
-            $transaction->wallet->balance -= $oldAmountWithSign;
-            // add new
-            $transaction->wallet->balance += $transaction->amount;
-            $transaction->wallet->save();
-        }
-    }
-
-    public function deleted($transaction)
-    {
-        // revert balance
-        $transaction->wallet->balance -= $transaction->amount;
-        $transaction->wallet->save();
+        $transaction->wallet->actualBalance(true);
     }
 }

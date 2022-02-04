@@ -90,6 +90,10 @@ class WalletTest extends TestCase
         $this->assertTrue($user->wallet->exists);
         $this->assertEquals(1, $user->wallet->transactions()->withTrashed()->count());
         $this->assertEquals(0, $user->wallet->transactions->count());
+        $this->assertEquals(0, $user->wallet->actualBalance());
+        $this->assertEquals(0, $user->wallet->balance);
+        $transaction->restore();
+        $this->assertEquals(10000, $user->wallet->fresh()->balance);
     }
 
     /** @test */
@@ -197,7 +201,7 @@ class WalletTest extends TestCase
     function balance_change_triggers_recalculation_if_activated()
     {
         $wallet = WalletFactory::new()->create();
-        config(['auto_recalculate_balance' => true]);
+        config(['wallet.auto_recalculate_balance' => true]);
         $this->expectsJobs(RecalculateWalletBalance::class);
         $wallet->balance = -10;
         $wallet->save();

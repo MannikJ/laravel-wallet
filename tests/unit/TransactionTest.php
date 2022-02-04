@@ -80,12 +80,18 @@ class TransactionTest extends TestCase
     /** @test */
     public function delete_model()
     {
-        $transaction = TransactionFactory::new()->create(['amount' => 20, 'type' => 'deposit']);
+        $transaction = TransactionFactory::new()->create([
+            'amount' => 20,
+            'type' => 'deposit'
+        ]);
         $this->assertEquals(20, $transaction->wallet->refresh()->balance);
         $transaction->delete();
         $this->assertTrue($transaction->trashed());
         $this->assertEquals(0, $transaction->wallet->refresh()->balance);
-        $transaction = TransactionFactory::new()->create(['amount' => 20, 'type' => 'withdraw']);
+        $transaction = TransactionFactory::new()->create([
+            'amount' => 20,
+            'type' => 'withdraw'
+        ]);
         $this->assertEquals(-20, $transaction->wallet->refresh()->balance);
     }
 
@@ -195,6 +201,4 @@ class TransactionTest extends TestCase
         $this->assertEquals($price, $transaction->getTotalAmountAttribute());
         $this->assertEquals($price, $transaction->total_amount);
     }
-
 }
-

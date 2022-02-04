@@ -31,6 +31,6 @@ class Wallet
 
     public function autoRecalculationActive()
     {
-        return config('auto_recalculate_balance', false);
+        return config('wallet.auto_recalculate_balance', false);
     }
 }
