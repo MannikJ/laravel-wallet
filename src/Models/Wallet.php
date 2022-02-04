@@ -5,7 +5,6 @@ namespace MannikJ\Laravel\Wallet\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
 
 class Wallet extends Model
@@ -53,7 +52,8 @@ class Wallet extends Model
      */
     public function deposit($amount, $meta = [], $type = 'deposit', $forceFail = false)
     {
-        $accepted = $amount >= 0 && !$forceFail ? true : false;
+        $accepted = $amount >= 0
+            && !$forceFail ? true : false;
 
         if (!$this->exists) {
             $this->save();
@@ -64,12 +64,13 @@ class Wallet extends Model
                 'amount' => $amount,
                 'type' => $type,
                 'meta' => $meta,
-                'deleted_at' => $accepted ? null : Carbon::now(),
+                'deleted_at' => $accepted ? null : now(),
             ]);
 
         if (!$accepted && !$forceFail) {
             throw new UnacceptedTransactionException($transaction, 'Deposit not accepted!');
         }
+
         $this->refresh();
         return $transaction;
     }
@@ -91,12 +92,14 @@ class Wallet extends Model
      * @param  integer $amount Only the absolute value will be considered
      * @param  string  $type
      * @param  array   $meta
-     * @param  boolean $shouldAccept
+     * @param  boolean $guarded
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
-    public function withdraw($amount, $meta = [], $type = 'withdraw', $shouldAccept = true)
+    public function withdraw($amount, $meta = [], $type = 'withdraw', $guarded = true)
     {
-        $accepted = $shouldAccept ? $this->canWithdraw($amount) : true;
+        $accepted = $guarded
+            ? $this->canWithdraw($amount)
+            : true;
 
         if (!$this->exists) {
             $this->save();
@@ -107,12 +110,13 @@ class Wallet extends Model
                 'amount' => $amount,
                 'type' => $type,
                 'meta' => $meta,
-                'deleted_at' => $accepted ? null : Carbon::now(),
+                'deleted_at' => $accepted ? null : now(),
             ]);
 
         if (!$accepted) {
             throw new UnacceptedTransactionException($transaction, 'Withdrawal not accepted due to insufficient funds!');
         }
+        
         $this->refresh();
         return $transaction;
     }
