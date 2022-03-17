@@ -1,7 +1,7 @@
 # Laravel Wallet
 
 Some apps require a prepayment system like a virtual wallet where customers can recharge credits which they can then use to pay in app stuff.
-With this package you can equip your eloquent models with one or multiple digital wallets that handle that for you.
+With this package you can equip your eloquent models with a digital wallet that handle that for you.
 All the wallet activities are tracked with transactions.
 
 ## Installation
