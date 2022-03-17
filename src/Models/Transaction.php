@@ -2,12 +2,32 @@
 
 namespace MannikJ\Laravel\Wallet\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use MannikJ\Laravel\Wallet\Contracts\ValidModelConstructor;
+use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 
-class Transaction extends Model
+/**
+ * A model which stores wallet transactions
+ * 
+ * @property int $id
+ * @property int $wallet_id
+ * @property string $type
+ * @property string $hash
+ * @property string $type
+ * @property array $meta
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $deleted_at
+ */
+class Transaction extends Model implements ValidModelConstructor
 {
     use SoftDeletes;
     use HasFactory;
@@ -40,7 +60,7 @@ class Transaction extends Model
     /**
      * Retrieve the wallet of this transaction
      */
-    public function wallet()
+    public function wallet(): BelongsTo
     {
         return $this->belongsTo(config('wallet.wallet_model', Wallet::class))->withTrashed();
     }
@@ -48,7 +68,7 @@ class Transaction extends Model
     /**
      * Retrieve the original version of the transaction (if it has been replaced)
      */
-    public function origin()
+    public function origin(): BelongsTo
     {
         return $this->belongsTo(config('wallet.transaction_model', Transaction::class))->withTrashed();
     }
@@ -56,7 +76,7 @@ class Transaction extends Model
     /**
      * Retrieve child transactions
      */
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(config('wallet.transaction_model', Transaction::class), 'origin_id');
     }
@@ -64,7 +84,7 @@ class Transaction extends Model
     /**
      * Retrieve optional reference model
      */
-    public function reference()
+    public function reference(): MorphTo
     {
         return $this->morphTo();
     }
@@ -76,9 +96,9 @@ class Transaction extends Model
      * Be careful if the old transaction was referenced
      * by other models.
      */
-    public function replace($attributes)
+    public function replace($attributes): Transaction
     {
-        return \DB::transaction(function () use ($attributes) {
+        return DB::transaction(function () use ($attributes) {
             $newTransaction = $this->replicate();
             $newTransaction->created_at = $this->created_at;
             $newTransaction->fill($attributes);
@@ -102,7 +122,7 @@ class Transaction extends Model
         $this->attributes['amount'] = ($amount);
     }
 
-    public function getAmountWithSign($amount = null, $type = null)
+    public function getAmountWithSign(null|int|float $amount = null, ?string $type = null): int|float
     {
         $amount = $amount ?: Arr::get($this->attributes, 'amount');
         $type = $type ?: $this->type;
@@ -113,14 +133,14 @@ class Transaction extends Model
         return $amount;
     }
 
-    public function shouldConvertToAbsoluteAmount($type = null)
+    public function shouldConvertToAbsoluteAmount(?string $type = null): bool
     {
         $type = $type ?: $this->type;
-        return in_array($type, \Wallet::subtractingTransactionTypes()) ||
-            in_array($type, \Wallet::addingTransactionTypes());
+        return in_array($type, WalletFacade::subtractingTransactionTypes()) ||
+            in_array($type, WalletFacade::addingTransactionTypes());
     }
 
-    public function getTotalAmount()
+    public function getTotalAmount(): int|float
     {
         // $totalAmount = $this->amount + $this->children()->get()->sum('amount');
         $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first();
@@ -129,20 +149,20 @@ class Transaction extends Model
         return $totalAmount;
     }
 
-    public static function getSignedAmountRawSql($table = null)
+    public static function getSignedAmountRawSql(?string $table = null): string
     {
         $table = $table ?: (new static())->getTable();
         $subtractingTypes = implode(',', array_map(
             function ($type) {
                 return "'{$type}'";
             },
-            \Wallet::subtractingTransactionTypes()
+            WalletFacade::subtractingTransactionTypes()
         ));
         $addingTypes = implode(',', array_map(
             function ($type) {
                 return "'{$type}'";
             },
-            \Wallet::addingTransactionTypes()
+            WalletFacade::addingTransactionTypes()
         ));
         return "CASE
                 WHEN {$table}.type
@@ -155,7 +175,7 @@ class Transaction extends Model
                 END";
     }
 
-    public static function getChildTotalAmountRawSql($table = 'children')
+    public static function getChildTotalAmountRawSql(?string $table = 'children'): string
     {
         $signedAmountRawSql = static::getSignedAmountRawSql($table);
         $transactionsTable = (new static())->getTable();
@@ -167,7 +187,7 @@ class Transaction extends Model
                 ),0)";
     }
 
-    public static function getTotalAmountRawSql()
+    public static function getTotalAmountRawSql(): string
     {
         // TODO: total_amount cannot be queried in where
         $signedAmountRawSql = static::getSignedAmountRawSql();
@@ -183,13 +203,13 @@ class Transaction extends Model
                 )";
     }
 
-    public function scopeSelectTotalAmount($query)
+    public function scopeSelectTotalAmount(Builder $query): Builder
     {
-        return $query->addSelect(\DB::raw($this->getTotalAmountRawSql() . 'AS total_amount'));
+        return $query->addSelect(DB::raw($this->getTotalAmountRawSql() . 'AS total_amount'));
     }
 
 
-    public function getTotalAmountAttribute()
+    public function getTotalAmountAttribute(): int|float
     {
         $totalAmount = Arr::get($this->attributes, 'total_amount', $this->getTotalAmount());
         return $totalAmount;

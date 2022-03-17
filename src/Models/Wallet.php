@@ -4,10 +4,26 @@ namespace MannikJ\Laravel\Wallet\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use MannikJ\Laravel\Wallet\Contracts\ValidModelConstructor;
 use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
+use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 
-class Wallet extends Model
+/**
+ * @property int $id
+ * @property ?int $owner
+ * @property ?string $owner_type
+ * @property int|float $balance
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $deleted_at
+ * 
+ */
+class Wallet extends Model implements ValidModelConstructor
 {
     use SoftDeletes;
     use HasFactory;
@@ -30,7 +46,7 @@ class Wallet extends Model
     /**
      * Retrieve all transactions
      */
-    public function transactions()
+    public function transactions(): HasMany
     {
         return $this->hasMany(config('wallet.transaction_model', Transaction::class));
     }
@@ -38,7 +54,7 @@ class Wallet extends Model
     /**
      * Retrieve owner
      */
-    public function owner()
+    public function owner(): MorphTo
     {
         return $this->morphTo();
     }
@@ -50,7 +66,7 @@ class Wallet extends Model
      * @param  array   $meta
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
-    public function deposit($amount, $meta = [], $type = 'deposit', $forceFail = false)
+    public function deposit(int|float $amount, array $meta = [], string $type = 'deposit', bool $forceFail = false): Transaction
     {
         $accepted = $amount >= 0
             && !$forceFail ? true : false;
@@ -82,7 +98,7 @@ class Wallet extends Model
      * @param  array   $meta
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
-    public function failDeposit($amount, $meta = [], $type = 'deposit')
+    public function failDeposit(int|float $amount, array $meta = [], string $type = 'deposit'): Transaction
     {
         return $this->deposit($amount, $meta, $type, true);
     }
@@ -95,7 +111,7 @@ class Wallet extends Model
      * @param  boolean $guarded
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
-    public function withdraw($amount, $meta = [], $type = 'withdraw', $guarded = true)
+    public function withdraw(int|float $amount, array $meta = [], string $type = 'withdraw', bool $guarded = true)
     {
         $accepted = $guarded
             ? $this->canWithdraw($amount)
@@ -116,7 +132,7 @@ class Wallet extends Model
         if (!$accepted) {
             throw new UnacceptedTransactionException($transaction, 'Withdrawal not accepted due to insufficient funds!');
         }
-        
+
         $this->refresh();
         return $transaction;
     }
@@ -127,7 +143,7 @@ class Wallet extends Model
      * @param  string  $type
      * @param  array   $meta
      */
-    public function forceWithdraw($amount, $meta = [], $type = 'withdraw')
+    public function forceWithdraw(int|float $amount, array $meta = [], string $type = 'withdraw')
     {
         return $this->withdraw($amount, $meta, $type, false);
     }
@@ -137,7 +153,7 @@ class Wallet extends Model
      * @param  integer $amount
      * @return boolean
      */
-    public function canWithdraw($amount = null)
+    public function canWithdraw(int|float $amount = null)
     {
         return $amount ? $this->balance >= abs($amount) : $this->balance > 0;
     }
@@ -148,7 +164,7 @@ class Wallet extends Model
      * @param integer $balance
      * @param string $comment
      */
-    public function setBalance($amount, $comment = 'Manual offset transaction')
+    public function setBalance(int|float $amount, string $comment = 'Manual offset transaction')
     {
         $actualBalance = $this->actualBalance();
         $difference = $amount - $actualBalance;
@@ -169,15 +185,15 @@ class Wallet extends Model
     public function actualBalance(bool $save = false)
     {
         $undefined = $this->transactions()
-            ->whereNotIn('type', \Wallet::biasedTransactionTypes())
+            ->whereNotIn('type', WalletFacade::biasedTransactionTypes())
             ->sum('amount');
         $credits = $this->transactions()
-            ->whereIn('type', \Wallet::addingTransactionTypes())
-            ->sum(\DB::raw('abs(amount)'));
+            ->whereIn('type', WalletFacade::addingTransactionTypes())
+            ->sum(DB::raw('abs(amount)'));
 
         $debits = $this->transactions()
-            ->whereIn('type', \Wallet::subtractingTransactionTypes())
-            ->sum(\DB::raw('abs(amount)'));
+            ->whereIn('type', WalletFacade::subtractingTransactionTypes())
+            ->sum(DB::raw('abs(amount)'));
         $balance = $undefined + $credits - $debits;
 
         if ($save) {

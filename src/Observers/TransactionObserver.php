@@ -6,7 +6,7 @@ use MannikJ\Laravel\Wallet\Models\Transaction;
 
 class TransactionObserver
 {
-    public function creating($transaction)
+    public function creating(Transaction $transaction)
     {
         $transaction->hash = uniqid();
     }

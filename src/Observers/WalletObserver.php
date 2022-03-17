@@ -2,6 +2,7 @@
 
 namespace MannikJ\Laravel\Wallet\Observers;
 
+use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 use MannikJ\Laravel\Wallet\Models\Wallet;
 use MannikJ\Laravel\Wallet\Models\Transaction;
 use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
@@ -12,7 +13,7 @@ class WalletObserver
     {
         if (
             $wallet->isDirty('balance')
-            && \Wallet::autoRecalculationActive()
+            && WalletFacade::autoRecalculationActive()
         ) {
             RecalculateWalletBalance::dispatch($wallet);
         }

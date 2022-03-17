@@ -53,8 +53,6 @@ class CreateWalletTables extends Migration
                 $table->foreign('wallet_id')->references('id')->on('wallets')->onDelete('cascade');
             });
         }
-
-
     }
 
     /**

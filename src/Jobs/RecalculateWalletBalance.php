@@ -39,12 +39,12 @@ class RecalculateWalletBalance implements ShouldQueue
         $this->wallet->actualBalance(true);
     }
 
-    public function getCacheKey($name = null)
+    public function getCacheKey(?string $name = null)
     {
         return $this->buildCacheKey($this->wallet, $name);
     }
 
-    public static function buildCacheKey(Wallet $wallet = id, $name = null)
+    public static function buildCacheKey(Wallet $wallet, ?string $name = null)
     {
         $base = static::CACHE_PREFIX;
         $base .= $wallet ? $wallet->id : '';
