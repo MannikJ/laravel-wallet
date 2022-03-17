@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class UpdateWalletTransactionsTable extends Migration
 {
@@ -30,7 +31,7 @@ class UpdateWalletTransactionsTable extends Migration
     {
         $transactionModelClass = config('wallet.transaction_model');
         $transactionTable = (new $transactionModelClass())->getTable();
-        if (\DB::getDriverName() !== 'sqlite') {
+        if (DB::getDriverName() !== 'sqlite') {
             Schema::table($transactionTable, function (Blueprint $table) {
                 $table->dropForeign(['origin_id']);
             });
@@ -38,6 +39,5 @@ class UpdateWalletTransactionsTable extends Migration
         Schema::table($transactionTable, function (Blueprint $table) {
             $table->dropColumn(['origin_id']);
         });
-
     }
 }

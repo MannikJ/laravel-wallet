@@ -27,11 +27,12 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
-        "illuminate/support": "^7.0|^8.0"
+        "php": "^8.0",
+        "illuminate/support": "^8.0"
     },
     "require-dev": {
-        "doctrine/dbal": "^2.9",
+        "doctrine/dbal": "^3.0",
+        "nunomaduro/larastan": "^1.0",
         "orchestra/testbench": "^6.0",
         "phpunit/phpunit": "^9.3"
     },
@@ -59,6 +60,10 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit tests --colors=always --verbose --testdox"
+        "test": "vendor/bin/phpunit tests --colors=always --verbose --testdox",
+        "post-update-cmd": [
+            "vendor/bin/phpstan analyse",
+            "vendor/bin/composer test"
+        ]
     }
 }
