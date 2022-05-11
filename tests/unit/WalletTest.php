@@ -8,6 +8,7 @@ use MannikJ\Laravel\Wallet\Tests\TestCase;
 use MannikJ\Laravel\Wallet\Tests\Models\User;
 use MannikJ\Laravel\Wallet\Models\Transaction;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Queue;
 use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
 use MannikJ\Laravel\Wallet\Tests\Factories\TransactionFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\UserFactory;
@@ -191,20 +192,22 @@ class WalletTest extends TestCase
     /** @test */
     function balance_change_doesnt_trigger_recalculation()
     {
+        Queue::fake();
         $wallet = WalletFactory::new()->create();
-        $this->doesntExpectJobs(RecalculateWalletBalance::class);
         $wallet->balance = 10;
         $wallet->save();
+        Queue::assertNotPushed(RecalculateWalletBalance::class);
     }
 
     /** @test */
     function balance_change_triggers_recalculation_if_activated()
     {
+        Queue::fake();
         $wallet = WalletFactory::new()->create();
         config(['wallet.auto_recalculate_balance' => true]);
-        $this->expectsJobs(RecalculateWalletBalance::class);
         $wallet->balance = -10;
         $wallet->save();
+        Queue::assertPushed(RecalculateWalletBalance::class);
     }
 
     /** @test */

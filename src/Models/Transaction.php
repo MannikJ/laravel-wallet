@@ -19,6 +19,9 @@ use MannikJ\Laravel\Wallet\Facades\WalletFacade;
  * 
  * @property int $id
  * @property int $wallet_id
+ * @property int $origin_id
+ * @property int|null $reference_id
+ * @property string|null $reference_type 
  * @property string $type
  * @property string $hash
  * @property string $type
