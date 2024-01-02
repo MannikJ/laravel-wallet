@@ -32,6 +32,7 @@
     },
     "require-dev": {
         "doctrine/dbal": "^3.6",
+        "laravel/pint": "*",
         "nunomaduro/larastan": "^2.5",
         "orchestra/testbench": "^8.0",
         "phpunit/phpunit": "^10.0"
@@ -63,7 +64,7 @@
         "test": "vendor/bin/phpunit tests --colors=always --testdox",
         "post-update-cmd": [
             "vendor/bin/phpstan analyse",
-            "vendor/bin/composer test"
+            "composer test"
         ]
     }
 }
