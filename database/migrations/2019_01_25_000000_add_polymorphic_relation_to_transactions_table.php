@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class AddPolymorphicRelationToTransactionsTable extends Migration
 {
@@ -15,10 +15,12 @@ class AddPolymorphicRelationToTransactionsTable extends Migration
     {
         $transactionModelClass = config('wallet.transaction_model');
         $transactionTable = (new $transactionModelClass())->getTable();
-        Schema::table($transactionTable, function (Blueprint $table) use ($transactionTable) {
-            $table->string('reference_type')->nullable()->after('wallet_id');
+        Schema::table($transactionTable, function (Blueprint $table) {
+            $table->string('reference_type')
+                ->nullable()
+                ->after('wallet_id');
         });
-        Schema::table($transactionTable, function (Blueprint $table) use ($transactionTable) {
+        Schema::table($transactionTable, function (Blueprint $table) {
             $table->unsignedInteger('reference_id')->nullable()->after('wallet_id');
         });
     }

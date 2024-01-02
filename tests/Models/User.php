@@ -8,6 +8,6 @@ use MannikJ\Laravel\Wallet\Traits\HasWallet;
 
 class User extends AuthUser
 {
-    use HasWallet;
     use HasFactory;
+    use HasWallet;
 }

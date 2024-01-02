@@ -2,16 +2,12 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Factories;
 
-use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use MannikJ\Laravel\Wallet\Models\Transaction;
-use MannikJ\Laravel\Wallet\Models\Wallet;
 
 class TransactionFactory extends Factory
 {
-
     protected $model = Transaction::class;
-
 
     public function definition()
     {

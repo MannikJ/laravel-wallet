@@ -2,6 +2,9 @@
 
 namespace MannikJ\Laravel\Wallet\Traits;
 
+// use MannikJ\Laravel\Wallet\Models\Transaction;
+// use MannikJ\Laravel\Wallet\Models\Wallet;
+
 trait HasWallet
 {
     /**
@@ -17,7 +20,7 @@ trait HasWallet
      */
     public function wallet()
     {
-        return $this->morphOne(config('wallet.wallet_model', Wallet::class), 'owner')->withDefault();
+        return $this->morphOne(config('wallet.wallet_model'), 'owner')->withDefault();
     }
 
     /**
@@ -26,13 +29,12 @@ trait HasWallet
     public function walletTransactions()
     {
         return $this->hasManyThrough(
-            config('wallet.transaction_model', Transaction::class),
-            config('wallet.wallet_model', Wallet::class),
+            config('wallet.transaction_model'),
+            config('wallet.wallet_model'),
             'owner_id',
             'wallet_id'
         )->whereHas('wallet', function ($query) {
             $query->whereNull('deleted_at');
         })->latest();
     }
-
 }

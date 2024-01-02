@@ -16,12 +16,12 @@ use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 
 /**
  * A model which stores wallet transactions
- * 
+ *
  * @property int $id
  * @property int $wallet_id
  * @property int $origin_id
  * @property int|null $reference_id
- * @property string|null $reference_type 
+ * @property string|null $reference_type
  * @property string $type
  * @property string $hash
  * @property string $type
@@ -32,8 +32,8 @@ use MannikJ\Laravel\Wallet\Facades\WalletFacade;
  */
 class Transaction extends Model implements ValidModelConstructor
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'wallet_transactions';
 
@@ -42,7 +42,7 @@ class Transaction extends Model implements ValidModelConstructor
     ];
 
     protected $fillable = [
-        'wallet_id', 'amount', 'type', 'meta', 'deleted_at'
+        'wallet_id', 'amount', 'type', 'meta', 'deleted_at',
     ];
 
     protected $casts = [
@@ -54,7 +54,7 @@ class Transaction extends Model implements ValidModelConstructor
         $type = config('wallet.column_type');
         if ($type == 'decimal') {
             $this->casts['amount'] = 'float';
-        } else if ($type == 'integer') {
+        } elseif ($type == 'integer') {
             $this->casts['amount'] = 'integer';
         }
         parent::__construct($attributes);
@@ -108,6 +108,7 @@ class Transaction extends Model implements ValidModelConstructor
             $newTransaction->origin()->associate($this);
             $newTransaction->save();
             $this->delete();
+
             return $newTransaction;
         });
     }
@@ -125,7 +126,7 @@ class Transaction extends Model implements ValidModelConstructor
         $this->attributes['amount'] = ($amount);
     }
 
-    public function getAmountWithSign(null|int|float $amount = null, ?string $type = null): int|float
+    public function getAmountWithSign(int|float $amount = null, string $type = null): int|float
     {
         $amount = $amount ?: Arr::get($this->attributes, 'amount');
         $type = $type ?: $this->type;
@@ -133,12 +134,14 @@ class Transaction extends Model implements ValidModelConstructor
         if (in_array($type, config('wallet.subtracting_transaction_types', []))) {
             return $amount * -1;
         }
+
         return $amount;
     }
 
-    public function shouldConvertToAbsoluteAmount(?string $type = null): bool
+    public function shouldConvertToAbsoluteAmount(string $type = null): bool
     {
         $type = $type ?: $this->type;
+
         return in_array($type, WalletFacade::subtractingTransactionTypes()) ||
             in_array($type, WalletFacade::addingTransactionTypes());
     }
@@ -149,10 +152,11 @@ class Transaction extends Model implements ValidModelConstructor
         $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first();
         $totalAmount = $totalAmount ? Arr::get($totalAmount->getAttributes(), 'total_amount') : null;
         $this->attributes['total_amount'] = $totalAmount;
+
         return $totalAmount;
     }
 
-    public static function getSignedAmountRawSql(?string $table = null): string
+    public static function getSignedAmountRawSql(string $table = null): string
     {
         $table = $table ?: (new static())->getTable();
         $subtractingTypes = implode(',', array_map(
@@ -167,6 +171,7 @@ class Transaction extends Model implements ValidModelConstructor
             },
             WalletFacade::addingTransactionTypes()
         ));
+
         return "CASE
                 WHEN {$table}.type
                     IN ({$addingTypes})
@@ -182,6 +187,7 @@ class Transaction extends Model implements ValidModelConstructor
     {
         $signedAmountRawSql = static::getSignedAmountRawSql($table);
         $transactionsTable = (new static())->getTable();
+
         return "IFNULL((
                     SELECT sum({$signedAmountRawSql})
                     FROM {$transactionsTable} AS {$table}
@@ -195,6 +201,7 @@ class Transaction extends Model implements ValidModelConstructor
         // TODO: total_amount cannot be queried in where
         $signedAmountRawSql = static::getSignedAmountRawSql();
         $childTotalAmount = static::getChildTotalAmountRawSql();
+
         return "(
                     IFNULL(
                         (
@@ -208,13 +215,13 @@ class Transaction extends Model implements ValidModelConstructor
 
     public function scopeSelectTotalAmount(Builder $query): Builder
     {
-        return $query->addSelect(DB::raw($this->getTotalAmountRawSql() . 'AS total_amount'));
+        return $query->addSelect(DB::raw($this->getTotalAmountRawSql().'AS total_amount'));
     }
-
 
     public function getTotalAmountAttribute(): int|float
     {
         $totalAmount = Arr::get($this->attributes, 'total_amount', $this->getTotalAmount());
+
         return $totalAmount;
     }
 }

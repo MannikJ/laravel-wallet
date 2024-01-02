@@ -3,8 +3,8 @@
 namespace MannikJ\Laravel\Wallet\Tests\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use MannikJ\Laravel\Wallet\Tests\Models\User;
 use Illuminate\Support\Str;
+use MannikJ\Laravel\Wallet\Tests\Models\User;
 
 class UserFactory extends Factory
 {

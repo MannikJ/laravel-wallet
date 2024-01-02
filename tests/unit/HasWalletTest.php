@@ -2,14 +2,12 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
-use MannikJ\Laravel\Wallet\Models\Wallet;
-use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
-use MannikJ\Laravel\Wallet\Tests\TestCase;
-use MannikJ\Laravel\Wallet\Models\Transaction;
 use Illuminate\Support\Collection;
+use MannikJ\Laravel\Wallet\Models\Wallet;
 use MannikJ\Laravel\Wallet\Tests\Factories\TransactionFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\UserFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
+use MannikJ\Laravel\Wallet\Tests\TestCase;
 
 class HasWalletTest extends TestCase
 {
@@ -19,7 +17,7 @@ class HasWalletTest extends TestCase
         $user = UserFactory::new()->create();
         $this->assertInstanceOf(Wallet::class, $user->wallet);
         $this->assertFalse($user->wallet->exists());
-        $this->assertTrue(0.0 === $user->wallet->balance);
+        $this->assertTrue($user->wallet->balance === 0.0);
     }
 
     /** @test */
@@ -41,5 +39,4 @@ class HasWalletTest extends TestCase
         $this->assertEquals(5, $user2->walletTransactions()->count());
         $this->assertEmpty($wallet2->transactions->diff($user2->walletTransactions));
     }
-
 }

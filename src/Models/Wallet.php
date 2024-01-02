@@ -2,7 +2,6 @@
 
 namespace MannikJ\Laravel\Wallet\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -14,19 +13,17 @@ use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
 use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 
 /**
- * @property int $id
- * @property ?int $owner
- * @property ?string $owner_type
+ * @property int       $id
+ * @property ?int      $owner
+ * @property ?string   $owner_type
  * @property int|float $balance
- * @property Carbon $created_at
- * @property Carbon $updated_at
- * @property Carbon $deleted_at
- * 
+ * @property Carbon    $created_at
+ * @property Carbon    $updated_at
+ * @property Carbon    $deleted_at
  */
 class Wallet extends Model implements ValidModelConstructor
 {
     use SoftDeletes;
-    use HasFactory;
 
     protected $attributes = [
         'balance' => 0,
@@ -37,14 +34,14 @@ class Wallet extends Model implements ValidModelConstructor
         $type = config('wallet.column_type');
         if ($type == 'decimal') {
             $this->casts['balance'] = 'float';
-        } else if ($type == 'integer') {
+        } elseif ($type == 'integer') {
             $this->casts['balance'] = 'integer';
         }
         parent::__construct($attributes);
     }
 
     /**
-     * Retrieve all transactions
+     * Retrieve all transactions.
      */
     public function transactions(): HasMany
     {
@@ -52,7 +49,7 @@ class Wallet extends Model implements ValidModelConstructor
     }
 
     /**
-     * Retrieve owner
+     * Retrieve owner.
      */
     public function owner(): MorphTo
     {
@@ -60,18 +57,17 @@ class Wallet extends Model implements ValidModelConstructor
     }
 
     /**
-     * Move credits to this account
-     * @param  integer $amount
-     * @param  string  $type
-     * @param  array   $meta
+     * Move credits to this account.
+     *
+     * @param  int  $amount
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
     public function deposit(int|float $amount, array $meta = [], string $type = 'deposit', bool $forceFail = false): Transaction
     {
         $accepted = $amount >= 0
-            && !$forceFail ? true : false;
+            && ! $forceFail ? true : false;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->save();
         }
 
@@ -83,19 +79,19 @@ class Wallet extends Model implements ValidModelConstructor
                 'deleted_at' => $accepted ? null : now(),
             ]);
 
-        if (!$accepted && !$forceFail) {
+        if (! $accepted && ! $forceFail) {
             throw new UnacceptedTransactionException($transaction, 'Deposit not accepted!');
         }
 
         $this->refresh();
+
         return $transaction;
     }
 
     /**
-     * Fail to move credits to this account
-     * @param  integer $amount
-     * @param  string  $type
-     * @param  array   $meta
+     * Fail to move credits to this account.
+     *
+     * @param  int  $amount
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
     public function failDeposit(int|float $amount, array $meta = [], string $type = 'deposit'): Transaction
@@ -104,11 +100,9 @@ class Wallet extends Model implements ValidModelConstructor
     }
 
     /**
-     * Attempt to move credits from this account
-     * @param  integer $amount Only the absolute value will be considered
-     * @param  string  $type
-     * @param  array   $meta
-     * @param  boolean $guarded
+     * Attempt to move credits from this account.
+     *
+     * @param  int  $amount Only the absolute value will be considered
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
     public function withdraw(int|float $amount, array $meta = [], string $type = 'withdraw', bool $guarded = true)
@@ -117,7 +111,7 @@ class Wallet extends Model implements ValidModelConstructor
             ? $this->canWithdraw($amount)
             : true;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->save();
         }
 
@@ -129,19 +123,19 @@ class Wallet extends Model implements ValidModelConstructor
                 'deleted_at' => $accepted ? null : now(),
             ]);
 
-        if (!$accepted) {
+        if (! $accepted) {
             throw new UnacceptedTransactionException($transaction, 'Withdrawal not accepted due to insufficient funds!');
         }
 
         $this->refresh();
+
         return $transaction;
     }
 
     /**
-     * Move credits from this account
-     * @param  integer $amount
-     * @param  string  $type
-     * @param  array   $meta
+     * Move credits from this account.
+     *
+     * @param  int  $amount
      */
     public function forceWithdraw(int|float $amount, array $meta = [], string $type = 'withdraw')
     {
@@ -149,9 +143,10 @@ class Wallet extends Model implements ValidModelConstructor
     }
 
     /**
-     * Determine if the user can withdraw the given amount
-     * @param  integer $amount
-     * @return boolean
+     * Determine if the user can withdraw the given amount.
+     *
+     * @param  int  $amount
+     * @return bool
      */
     public function canWithdraw(int|float $amount = null)
     {
@@ -160,9 +155,9 @@ class Wallet extends Model implements ValidModelConstructor
 
     /**
      * Set wallet balance to desired value.
-     * Will automatically create the necessary transaction
-     * @param integer $balance
-     * @param string $comment
+     * Will automatically create the necessary transaction.
+     *
+     * @param  int  $balance
      */
     public function setBalance(int|float $amount, string $comment = 'Manual offset transaction')
     {
@@ -170,16 +165,18 @@ class Wallet extends Model implements ValidModelConstructor
         $difference = $amount - $actualBalance;
         if ($difference == 0) {
             return;
-        };
+        }
         $type = $difference > 0 ? 'deposit' : 'forceWithdraw';
         $this->balance = $actualBalance;
         $this->save();
+
         return $this->{$type}($difference, ['comment' => $comment]);
     }
 
     /**
      * Returns the actual balance for this wallet.
-     * Might be different from the balance property if the database is manipulated
+     * Might be different from the balance property if the database is manipulated.
+     *
      * @return float balance
      */
     public function actualBalance(bool $save = false)
@@ -200,6 +197,7 @@ class Wallet extends Model implements ValidModelConstructor
             $this->balance = $balance;
             $this->save();
         }
+
         return $balance;
     }
 }

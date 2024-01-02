@@ -2,18 +2,15 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
-use MannikJ\Laravel\Wallet\Models\Wallet;
-use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
-use MannikJ\Laravel\Wallet\Tests\TestCase;
-use MannikJ\Laravel\Wallet\Tests\Models\User;
-use MannikJ\Laravel\Wallet\Models\Transaction;
 use Illuminate\Support\Collection;
+use MannikJ\Laravel\Wallet\Models\Transaction;
+use MannikJ\Laravel\Wallet\Models\Wallet;
 use MannikJ\Laravel\Wallet\Tests\Factories\TransactionFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
+use MannikJ\Laravel\Wallet\Tests\TestCase;
 
 class TransactionTest extends TestCase
 {
-
     /** @test */
     public function wallet()
     {
@@ -82,7 +79,7 @@ class TransactionTest extends TestCase
     {
         $transaction = TransactionFactory::new()->create([
             'amount' => 20,
-            'type' => 'deposit'
+            'type' => 'deposit',
         ]);
         $this->assertEquals(20, $transaction->wallet->refresh()->balance);
         $transaction->delete();
@@ -90,7 +87,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(0, $transaction->wallet->refresh()->balance);
         $transaction = TransactionFactory::new()->create([
             'amount' => 20,
-            'type' => 'withdraw'
+            'type' => 'withdraw',
         ]);
         $this->assertEquals(-20, $transaction->wallet->refresh()->balance);
     }
@@ -103,7 +100,7 @@ class TransactionTest extends TestCase
             'amount' => 20,
             'type' => 'deposit',
             'created_at' => $timestamp,
-            'updated_at' => $timestamp
+            'updated_at' => $timestamp,
         ]);
         $this->assertTrue($timestamp->diffInSeconds($transaction->refresh()->updated_at) < 1);
         $this->assertEquals(20, $transaction->wallet->refresh()->balance);

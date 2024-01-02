@@ -3,10 +3,10 @@
 namespace MannikJ\Laravel\Wallet\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use MannikJ\Laravel\Wallet\Models\Wallet;
 
 class RecalculateWalletBalance implements ShouldQueue
@@ -17,11 +17,9 @@ class RecalculateWalletBalance implements ShouldQueue
 
     const CACHE_PREFIX = 'recalculate:wallet:';
 
-
     /**
      * Create a new job instance.
      *
-     * @param  Wallet  $wallet
      * @return void
      */
     public function __construct(Wallet $wallet)
@@ -39,15 +37,16 @@ class RecalculateWalletBalance implements ShouldQueue
         $this->wallet->actualBalance(true);
     }
 
-    public function getCacheKey(?string $name = null)
+    public function getCacheKey(string $name = null)
     {
         return $this->buildCacheKey($this->wallet, $name);
     }
 
-    public static function buildCacheKey(Wallet $wallet, ?string $name = null)
+    public static function buildCacheKey(Wallet $wallet, string $name = null)
     {
         $base = static::CACHE_PREFIX;
         $base .= $wallet ? $wallet->id : '';
-        return $base .= $name ? ':' . $name : '';
+
+        return $base .= $name ? ':'.$name : '';
     }
 }

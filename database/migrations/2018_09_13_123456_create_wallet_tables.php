@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateWalletTables extends Migration
 {
@@ -15,7 +15,7 @@ class CreateWalletTables extends Migration
     {
         $walletModelClass = config('wallet.wallet_model');
         $walletTable = (new $walletModelClass())->getTable();
-        if (!Schema::hasTable($walletTable)) {
+        if (! Schema::hasTable($walletTable)) {
             Schema::create($walletTable, function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('owner_id')->nullable();
@@ -23,7 +23,7 @@ class CreateWalletTables extends Migration
                 $type = config('wallet.column_type');
                 if ($type == 'decimal') {
                     $table->decimal('balance', 12, 4)->default(0); // amount is an decimal, it could be "dollars" or "cents"
-                } else if ($type == 'integer') {
+                } elseif ($type == 'integer') {
                     $table->integer('balance');
                 }
 
@@ -33,7 +33,7 @@ class CreateWalletTables extends Migration
         }
         $transactionModelClass = config('wallet.transaction_model');
         $transactionTable = (new $transactionModelClass())->getTable();
-        if (!Schema::hasTable($transactionTable)) {
+        if (! Schema::hasTable($transactionTable)) {
             Schema::create($transactionTable, function (Blueprint $table) {
                 $table->increments('id');
                 $table->unsignedInteger('wallet_id');
