@@ -6,16 +6,14 @@
   "service": "workspace",
   "workspaceFolder": "/var/www/laravel-wallet",
   "extensions": [
-    "dotjoshjohnson.xml",
-    "ryu1kn.partial-diff",
     "artdiniz.quitcontrol-vscode",
+    "mikestead.dotenv",
+    "ryu1kn.partial-diff",
     "emallin.phpunit",
     "eamodio.gitlens",
     "onecentlin.laravel-extension-pack",
     "onecentlin.php-productive-pack",
-    "sdras.vue-vscode-extensionpack",
-    "fknop.vscode-npm",
-    "apility.beautify-blade"
+    "beyondcode.tinkerwell"
   ],
   "remoteUser": "laradock",
   "shutdownAction": "none"
