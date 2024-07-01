@@ -4,6 +4,17 @@ namespace MannikJ\Laravel\Wallet\Services;
 
 class Wallet
 {
+    public function config($relativePath, $default)
+    {
+        $path = "wallet";
+
+        if ($relativePath) {
+            $path .= ".$relativePath";
+        }
+
+        return config($path, $default);
+    }
+
     public function addingTransactionTypes(): array
     {
         return config('wallet.adding_transaction_types', []);

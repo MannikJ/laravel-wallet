@@ -2,23 +2,27 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use MannikJ\Laravel\Wallet\Models\Transaction;
 use MannikJ\Laravel\Wallet\Models\Wallet;
 use MannikJ\Laravel\Wallet\Tests\Factories\TransactionFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
 use MannikJ\Laravel\Wallet\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class TransactionTest extends TestCase
 {
-    /** @test */
+    use RefreshDatabase;
+
+   #[Test]
     public function wallet()
     {
         $transaction = TransactionFactory::new()->create();
         $this->assertInstanceOf(Wallet::class, $transaction->wallet);
     }
 
-    /** @test */
+   #[Test]
     public function origin()
     {
         $origin = TransactionFactory::new()->create();
@@ -30,7 +34,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($origin->is($transaction->origin));
     }
 
-    /** @test */
+   #[Test]
     public function children()
     {
         $origin = TransactionFactory::new()->create();
@@ -42,7 +46,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($origin->is($transaction->origin));
     }
 
-    /** @test */
+   #[Test]
     public function reference()
     {
         $transaction = TransactionFactory::new()->create();
@@ -51,7 +55,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($transaction->wallet->is($transaction->reference));
     }
 
-    /** @test */
+   #[Test]
     public function update()
     {
         $transaction = TransactionFactory::new()->create(['amount' => 20, 'type' => 'deposit']);
@@ -66,7 +70,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(-20, $transaction->wallet->refresh()->balance);
     }
 
-    /** @test */
+   #[Test]
     public function create_converts_amount_to_absolute_value()
     {
         $wallet = WalletFactory::new()->create();
@@ -74,7 +78,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(20, $transaction->getAttributes()['amount']);
     }
 
-    /** @test */
+   #[Test]
     public function delete_model()
     {
         $transaction = TransactionFactory::new()->create([
@@ -92,7 +96,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(-20, $transaction->wallet->refresh()->balance);
     }
 
-    /** @test */
+   #[Test]
     public function replace()
     {
         $timestamp = now()->subHours(1);
@@ -112,7 +116,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($replacement->origin->trashed());
     }
 
-    /** @test */
+   #[Test]
     public function generated_hash_is_set()
     {
         $transaction = TransactionFactory::new()->create();
@@ -123,7 +127,7 @@ class TransactionTest extends TestCase
         });
     }
 
-    /** @test */
+   #[Test]
     public function get_total_amount()
     {
         $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);
@@ -149,7 +153,7 @@ class TransactionTest extends TestCase
         $this->assertEquals($price, $transaction->getTotalAmount());
     }
 
-    /** @test */
+   #[Test]
     public function scope_select_total_amount()
     {
         $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);
@@ -173,7 +177,7 @@ class TransactionTest extends TestCase
         $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
     }
 
-    /** @test */
+   #[Test]
     public function get_total_amount_attribute()
     {
         $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);

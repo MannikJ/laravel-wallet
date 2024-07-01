@@ -27,15 +27,14 @@
         }
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^10.0"
+        "php": "^8.2"
     },
     "require-dev": {
-        "doctrine/dbal": "^3.6",
-        "laravel/pint": "*",
-        "nunomaduro/larastan": "^2.5",
-        "orchestra/testbench": "^8.0",
-        "phpunit/phpunit": "^10.0"
+        "doctrine/dbal": "^4.0",
+        "laravel/pint": "1.16.1",
+        "larastan/larastan": "^2.9",
+        "orchestra/testbench": "^9.1.1",
+        "phpunit/phpunit": "^11.1"
     },
     "autoload": {
         "psr-4": {

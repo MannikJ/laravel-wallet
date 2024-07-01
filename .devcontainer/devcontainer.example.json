@@ -9,11 +9,10 @@
     "artdiniz.quitcontrol-vscode",
     "mikestead.dotenv",
     "ryu1kn.partial-diff",
-    "emallin.phpunit",
+    "calebporzio.better-phpunit",
     "eamodio.gitlens",
     "onecentlin.laravel-extension-pack",
     "onecentlin.php-productive-pack",
-    "beyondcode.tinkerwell"
   ],
   "remoteUser": "laradock",
   "shutdownAction": "none"

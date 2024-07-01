@@ -2,6 +2,7 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
@@ -13,17 +14,20 @@ use MannikJ\Laravel\Wallet\Tests\Factories\UserFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
 use MannikJ\Laravel\Wallet\Tests\Models\User;
 use MannikJ\Laravel\Wallet\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class WalletTest extends TestCase
 {
-    /** @test */
+    use RefreshDatabase;
+
+   #[Test]
     public function owner()
     {
         $wallet = WalletFactory::new()->create();
         $this->assertInstanceOf(User::class, $wallet->owner);
     }
 
-    /** @test */
+   #[Test]
     public function delete_and_restore_wallet()
     {
         $user = UserFactory::new()->create();
@@ -46,7 +50,7 @@ class WalletTest extends TestCase
         $this->assertEquals(2, Transaction::count());
     }
 
-    /** @test */
+   #[Test]
     public function deposit()
     {
         $user = UserFactory::new()->create();
@@ -67,7 +71,7 @@ class WalletTest extends TestCase
         $this->assertEquals(-25, $user->wallet->balance);
     }
 
-    /** @test */
+   #[Test]
     public function deposit_negative_amount()
     {
         $user = UserFactory::new()->create();
@@ -78,7 +82,7 @@ class WalletTest extends TestCase
         $transaction = $user->wallet->deposit(-30);
     }
 
-    /** @test */
+   #[Test]
     public function fail_deposit()
     {
         $user = UserFactory::new()->create();
@@ -94,7 +98,7 @@ class WalletTest extends TestCase
         $this->assertEquals(10000, $user->wallet->fresh()->balance);
     }
 
-    /** @test */
+   #[Test]
     public function force_withdraw()
     {
         $user = UserFactory::new()->create();
@@ -107,7 +111,7 @@ class WalletTest extends TestCase
         $this->assertEquals(-10000, $user->fresh()->balance);
     }
 
-    /** @test */
+   #[Test]
     public function can_withdraw()
     {
         $user = UserFactory::new()->create();
@@ -124,7 +128,7 @@ class WalletTest extends TestCase
         $this->assertFalse($user->wallet->canWithdraw(-6));
     }
 
-    /** @test */
+   #[Test]
     public function withdraw()
     {
         $user = UserFactory::new()->create();
@@ -139,7 +143,7 @@ class WalletTest extends TestCase
         $this->assertEquals(2, $user->wallet->walletTransactions()->withTrashed()->count());
     }
 
-    /** @test */
+   #[Test]
     public function set_balance()
     {
         $user = UserFactory::new()->create();
@@ -163,7 +167,7 @@ class WalletTest extends TestCase
         $this->assertEquals('Manual offset transaction', $offsetTransaction->meta['comment']);
     }
 
-    /** @test */
+   #[Test]
     public function actual_balance()
     {
         $wallet = WalletFactory::new()->create();
@@ -185,7 +189,7 @@ class WalletTest extends TestCase
         $this->assertEquals($expectedBalance, $user->wallet->actualBalance());
     }
 
-    /** @test */
+   #[Test]
     public function balance_change_doesnt_trigger_recalculation()
     {
         Queue::fake();
@@ -195,7 +199,7 @@ class WalletTest extends TestCase
         Queue::assertNotPushed(RecalculateWalletBalance::class);
     }
 
-    /** @test */
+   #[Test]
     public function balance_change_triggers_recalculation_if_activated()
     {
         Queue::fake();
@@ -206,7 +210,7 @@ class WalletTest extends TestCase
         Queue::assertPushed(RecalculateWalletBalance::class);
     }
 
-    /** @test */
+   #[Test]
     public function recalculation_performance()
     {
         $user = UserFactory::new()->create();

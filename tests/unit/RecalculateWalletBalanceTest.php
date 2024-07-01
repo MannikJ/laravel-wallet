@@ -2,14 +2,18 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
 use MannikJ\Laravel\Wallet\Models\Transaction;
 use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
 use MannikJ\Laravel\Wallet\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class RecalculateWalletBalanceTest extends TestCase
 {
-    /** @test */
+    use RefreshDatabase;
+
+   #[Test]
     public function dispatch()
     {
         config(['wallet.auto_recalculate_balance' => true]);

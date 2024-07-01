@@ -2,16 +2,20 @@
 
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use MannikJ\Laravel\Wallet\Models\Wallet;
 use MannikJ\Laravel\Wallet\Tests\Factories\TransactionFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\UserFactory;
 use MannikJ\Laravel\Wallet\Tests\Factories\WalletFactory;
 use MannikJ\Laravel\Wallet\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class HasWalletTest extends TestCase
 {
-    /** @test */
+    use RefreshDatabase;
+
+   #[Test]
     public function wallet()
     {
         $user = UserFactory::new()->create();
@@ -20,7 +24,7 @@ class HasWalletTest extends TestCase
         $this->assertTrue($user->wallet->balance === 0.0);
     }
 
-    /** @test */
+   #[Test]
     public function wallet_transactions()
     {
         $user1 = UserFactory::new()->create();
