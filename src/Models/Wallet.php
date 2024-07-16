@@ -61,9 +61,15 @@ class Wallet extends Model implements ValidModelConstructor
      *
      * @param  int  $amount
      * @return MannikJ\Laravel\Wallet\Models\Transaction
+     * 
+     * @throws UnacceptedTransactionException
      */
-    public function deposit(float $amount, array $meta = [], string $type = 'deposit', bool $forceFail = false): Transaction
-    {
+    public function deposit(
+        float $amount,
+        array $meta = [],
+        string $type = 'deposit',
+        bool $forceFail = false
+    ): Transaction {
         $accepted = $amount >= 0
             && !$forceFail ? true : false;
 
@@ -71,6 +77,7 @@ class Wallet extends Model implements ValidModelConstructor
             $this->save();
         }
 
+        /** @var Transaction */
         $transaction = $this->transactions()
             ->create([
                 'amount' => $amount,
@@ -90,12 +97,14 @@ class Wallet extends Model implements ValidModelConstructor
 
     /**
      * Fail to move credits to this account.
-     *
-     * @param  float  $amount
-     * @return MannikJ\Laravel\Wallet\Models\Transaction
+     * 
+     * @throws UnacceptedTransactionException
      */
-    public function failDeposit(float $amount, array $meta = [], string $type = 'deposit'): Transaction
-    {
+    public function failDeposit(
+        float $amount,
+        array $meta = [],
+        string $type = 'deposit'
+    ) {
         return $this->deposit($amount, $meta, $type, true);
     }
 
@@ -105,8 +114,12 @@ class Wallet extends Model implements ValidModelConstructor
      * @param  float  $amount Only the absolute value will be considered
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
-    public function withdraw(float $amount, array $meta = [], string $type = 'withdraw', bool $guarded = true)
-    {
+    public function withdraw(
+        float $amount,
+        array $meta = [],
+        string $type = 'withdraw',
+        bool $guarded = true
+    ) {
         $accepted = $guarded
             ? $this->canWithdraw($amount)
             : true;
@@ -137,8 +150,11 @@ class Wallet extends Model implements ValidModelConstructor
      *
      * @param  float  $amount
      */
-    public function forceWithdraw(int|float $amount, array $meta = [], string $type = 'withdraw')
-    {
+    public function forceWithdraw(
+        int|float $amount,
+        array $meta = [],
+        string $type = 'withdraw'
+    ) {
         return $this->withdraw($amount, $meta, $type, false);
     }
 
@@ -163,8 +179,10 @@ class Wallet extends Model implements ValidModelConstructor
      * @param  string  $comment
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
-    public function setBalance(float $amount, string $comment = 'Manual offset transaction')
-    {
+    public function setBalance(
+        float $amount,
+        string $comment = 'Manual offset transaction'
+    ) {
         $actualBalance = $this->actualBalance();
         $difference = $amount - $actualBalance;
 

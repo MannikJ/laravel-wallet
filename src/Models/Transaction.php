@@ -118,7 +118,7 @@ class Transaction extends Model implements ValidModelConstructor
         return $this->getAmountWithSign();
     }
 
-    public function setAmountAttribute($amount)
+    public function setAmountAttribute(int|float $amount)
     {
         if ($this->shouldConvertToAbsoluteAmount()) {
             $amount = abs($amount);

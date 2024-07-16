@@ -61,6 +61,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit tests --colors=always --testdox",
+        "static": "vendor/bin/phpstan analyse",
         "post-update-cmd": [
             "vendor/bin/phpstan analyse",
             "composer test"
