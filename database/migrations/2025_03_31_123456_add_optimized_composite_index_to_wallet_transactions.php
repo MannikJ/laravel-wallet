@@ -26,7 +26,7 @@ return new class extends Migration
 
     protected function getTableName(): string
     {
-        $walletModelClass = config('wallet.wallet_model');
+        $walletModelClass = config('wallet.transaction_model');
         $walletTable = (new $walletModelClass)->getTable();
 
         return $walletTable;

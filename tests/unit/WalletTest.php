@@ -3,6 +3,7 @@
 namespace MannikJ\Laravel\Wallet\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
 use MannikJ\Laravel\Wallet\Jobs\RecalculateWalletBalance;
@@ -217,6 +218,6 @@ class WalletTest extends TestCase
             return $time;
         });
         $this->assertTrue(true);
-        dump($result);
+        Log::info($result);
     }
 }
