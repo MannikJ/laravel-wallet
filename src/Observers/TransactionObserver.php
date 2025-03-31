@@ -13,11 +13,11 @@ class TransactionObserver
 
     public function saved(Transaction $transaction)
     {
-        $transaction->wallet->actualBalance(true);
+        $transaction->wallet->calculateBalance(true);
     }
 
     public function deleted(Transaction $transaction)
     {
-        $transaction->wallet->actualBalance(true);
+        $transaction->wallet->calculateBalance(true);
     }
 }

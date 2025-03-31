@@ -13,13 +13,13 @@ use MannikJ\Laravel\Wallet\Exceptions\UnacceptedTransactionException;
 use MannikJ\Laravel\Wallet\Facades\WalletFacade;
 
 /**
- * @property int       $id
- * @property ?int      $owner
- * @property ?string   $owner_type
+ * @property int $id
+ * @property ?int $owner
+ * @property ?string $owner_type
  * @property int|float $balance
- * @property Carbon    $created_at
- * @property Carbon    $updated_at
- * @property Carbon    $deleted_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $deleted_at
  */
 class Wallet extends Model implements ValidModelConstructor
 {
@@ -61,7 +61,7 @@ class Wallet extends Model implements ValidModelConstructor
      *
      * @param  int  $amount
      * @return MannikJ\Laravel\Wallet\Models\Transaction
-     * 
+     *
      * @throws UnacceptedTransactionException
      */
     public function deposit(
@@ -71,9 +71,9 @@ class Wallet extends Model implements ValidModelConstructor
         bool $forceFail = false
     ): Transaction {
         $accepted = $amount >= 0
-            && !$forceFail ? true : false;
+            && ! $forceFail ? true : false;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->save();
         }
 
@@ -86,7 +86,7 @@ class Wallet extends Model implements ValidModelConstructor
                 'deleted_at' => $accepted ? null : now(),
             ]);
 
-        if (!$accepted && !$forceFail) {
+        if (! $accepted && ! $forceFail) {
             throw new UnacceptedTransactionException($transaction, 'Deposit not accepted!');
         }
 
@@ -97,7 +97,7 @@ class Wallet extends Model implements ValidModelConstructor
 
     /**
      * Fail to move credits to this account.
-     * 
+     *
      * @throws UnacceptedTransactionException
      */
     public function failDeposit(
@@ -111,7 +111,7 @@ class Wallet extends Model implements ValidModelConstructor
     /**
      * Attempt to move credits from this account.
      *
-     * @param  float  $amount Only the absolute value will be considered
+     * @param  float  $amount  Only the absolute value will be considered
      * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
     public function withdraw(
@@ -124,7 +124,7 @@ class Wallet extends Model implements ValidModelConstructor
             ? $this->canWithdraw($amount)
             : true;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->save();
         }
 
@@ -136,7 +136,7 @@ class Wallet extends Model implements ValidModelConstructor
                 'deleted_at' => $accepted ? null : now(),
             ]);
 
-        if (!$accepted) {
+        if (! $accepted) {
             throw new UnacceptedTransactionException($transaction, 'Withdrawal not accepted due to insufficient funds!');
         }
 
@@ -160,11 +160,8 @@ class Wallet extends Model implements ValidModelConstructor
 
     /**
      * Determine if the user can withdraw the given amount.
-     *
-     * @param  float  $amount
-     * @return bool
      */
-    public function canWithdraw(float $amount = null)
+    public function canWithdraw(?float $amount = null): bool
     {
         return $amount
             ? $this->balance >= abs($amount)
@@ -174,40 +171,35 @@ class Wallet extends Model implements ValidModelConstructor
     /**
      * Set wallet balance to desired value.
      * Will automatically create the necessary transaction.
-     *
-     * @param  float  $balance
-     * @param  string  $comment
-     * @return MannikJ\Laravel\Wallet\Models\Transaction
      */
     public function setBalance(
         float $amount,
         string $comment = 'Manual offset transaction'
-    ) {
-        $actualBalance = $this->actualBalance();
-        $difference = $amount - $actualBalance;
+    ): ?Transaction {
+        $calculateBalance = $this->calculateBalance();
+        $difference = $amount - $calculateBalance;
 
         if ($difference == 0) {
-            return;
+            return null;
         }
 
         $type = $difference > 0
             ? 'deposit'
             : 'forceWithdraw';
 
-        $this->balance = $actualBalance;
+        $this->balance = $calculateBalance;
         $this->save();
 
         return $this->{$type}($difference, ['comment' => $comment]);
     }
 
     /**
-     * Returns the actual balance for this wallet.
-     * Might be different from the balance property if the database is manipulated.
-     *
-     * @param  bool  $save
-     * @return float balance
+     * Calculates the balance for this wallet over all associated transactions.
+     * Might be different from the balance property if the database was manipulated.
+     * Is called automatically after a new transaction is created to make
+     * sure the balance is always correct.
      */
-    public function actualBalance(bool $save = false): float
+    public function calculateBalance(bool $save = false): float
     {
         $undefined = $this->transactions()
             ->whereNotIn('type', WalletFacade::biasedTransactionTypes())
@@ -229,5 +221,13 @@ class Wallet extends Model implements ValidModelConstructor
         }
 
         return $balance;
+    }
+
+    /**
+     * @deprecated Will be removed in future versions.
+     */
+    public function actualBalance(bool $save = false): float
+    {
+        return $this->calculateBalance($save);
     }
 }

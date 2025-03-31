@@ -13,10 +13,9 @@ class RecalculateWalletBalanceTest extends TestCase
 {
     use RefreshDatabase;
 
-   #[Test]
+    #[Test]
     public function dispatch()
     {
-        config(['wallet.auto_recalculate_balance' => true]);
         $wallet = WalletFactory::new()->create();
         Transaction::flushEventListeners();
         $transaction = $wallet->transactions()->make(['type' => 'deposit', 'amount' => 10]);

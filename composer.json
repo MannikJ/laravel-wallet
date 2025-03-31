@@ -31,9 +31,9 @@
     },
     "require-dev": {
         "doctrine/dbal": "^4.0",
-        "laravel/pint": "1.16.1",
+        "laravel/pint": "^1.16",
         "larastan/larastan": "^2.9",
-        "orchestra/testbench": "^9.1.1",
+        "orchestra/testbench": "^9.1",
         "phpunit/phpunit": "^11.1"
     },
     "autoload": {

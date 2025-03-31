@@ -126,7 +126,7 @@ class Transaction extends Model implements ValidModelConstructor
         $this->attributes['amount'] = ($amount);
     }
 
-    public function getAmountWithSign(int|float $amount = null, string $type = null): int|float
+    public function getAmountWithSign(null|int|float $amount = null, ?string $type = null): int|float
     {
         $amount = $amount ?: Arr::get($this->attributes, 'amount');
         $type = $type ?: $this->type;
@@ -138,7 +138,7 @@ class Transaction extends Model implements ValidModelConstructor
         return $amount;
     }
 
-    public function shouldConvertToAbsoluteAmount(string $type = null): bool
+    public function shouldConvertToAbsoluteAmount(?string $type = null): bool
     {
         $type = $type ?: $this->type;
 
@@ -156,9 +156,9 @@ class Transaction extends Model implements ValidModelConstructor
         return $totalAmount;
     }
 
-    public static function getSignedAmountRawSql(string $table = null): string
+    public static function getSignedAmountRawSql(?string $table = null): string
     {
-        $table = $table ?: (new static())->getTable();
+        $table = $table ?: (new static)->getTable();
         $subtractingTypes = implode(',', array_map(
             function ($type) {
                 return "'{$type}'";
@@ -186,7 +186,7 @@ class Transaction extends Model implements ValidModelConstructor
     public static function getChildTotalAmountRawSql(?string $table = 'children'): string
     {
         $signedAmountRawSql = static::getSignedAmountRawSql($table);
-        $transactionsTable = (new static())->getTable();
+        $transactionsTable = (new static)->getTable();
 
         return "IFNULL((
                     SELECT sum({$signedAmountRawSql})
