@@ -15,7 +15,7 @@ class HasWalletTest extends TestCase
 {
     use RefreshDatabase;
 
-   #[Test]
+    #[Test]
     public function wallet()
     {
         $user = UserFactory::new()->create();
@@ -24,7 +24,7 @@ class HasWalletTest extends TestCase
         $this->assertTrue($user->wallet->balance === 0.0);
     }
 
-   #[Test]
+    #[Test]
     public function wallet_transactions()
     {
         $user1 = UserFactory::new()->create();

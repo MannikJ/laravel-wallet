@@ -14,7 +14,7 @@ class AddPolymorphicRelationToTransactionsTable extends Migration
     public function up()
     {
         $transactionModelClass = config('wallet.transaction_model');
-        $transactionTable = (new $transactionModelClass())->getTable();
+        $transactionTable = (new $transactionModelClass)->getTable();
         Schema::table($transactionTable, function (Blueprint $table) {
             $table->string('reference_type')
                 ->nullable()
@@ -35,7 +35,7 @@ class AddPolymorphicRelationToTransactionsTable extends Migration
     public function down()
     {
         $transactionModelClass = config('wallet.transaction_model');
-        $transactionTable = (new $transactionModelClass())->getTable();
+        $transactionTable = (new $transactionModelClass)->getTable();
         Schema::table($transactionTable, function (Blueprint $table) {
             $table->dropColumn('reference_type');
         });

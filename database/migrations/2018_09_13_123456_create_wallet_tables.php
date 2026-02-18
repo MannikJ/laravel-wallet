@@ -14,7 +14,7 @@ class CreateWalletTables extends Migration
     public function up()
     {
         $walletModelClass = config('wallet.wallet_model');
-        $walletTable = (new $walletModelClass())->getTable();
+        $walletTable = (new $walletModelClass)->getTable();
         if (! Schema::hasTable($walletTable)) {
             Schema::create($walletTable, function (Blueprint $table) {
                 $table->increments('id');
@@ -32,7 +32,7 @@ class CreateWalletTables extends Migration
             });
         }
         $transactionModelClass = config('wallet.transaction_model');
-        $transactionTable = (new $transactionModelClass())->getTable();
+        $transactionTable = (new $transactionModelClass)->getTable();
         if (! Schema::hasTable($transactionTable)) {
             Schema::create($transactionTable, function (Blueprint $table) {
                 $table->increments('id');
@@ -63,10 +63,10 @@ class CreateWalletTables extends Migration
     public function down()
     {
         $transactionModelClass = config('wallet.transaction_model');
-        $transactionTable = (new $transactionModelClass())->getTable();
+        $transactionTable = (new $transactionModelClass)->getTable();
         Schema::dropIfExists($transactionTable);
         $walletModelClass = config('wallet.transaction_model');
-        $walletTable = (new $walletModelClass())->getTable();
+        $walletTable = (new $walletModelClass)->getTable();
         Schema::dropIfExists($walletTable);
     }
 }

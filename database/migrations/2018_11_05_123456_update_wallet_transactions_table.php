@@ -15,7 +15,7 @@ class UpdateWalletTransactionsTable extends Migration
     public function up()
     {
         $transactionModelClass = config('wallet.transaction_model');
-        $transactionTable = (new $transactionModelClass())->getTable();
+        $transactionTable = (new $transactionModelClass)->getTable();
         Schema::table($transactionTable, function (Blueprint $table) use ($transactionTable) {
             $table->integer('origin_id')->unsigned()->nullable();
             $table->foreign('origin_id')->references('id')->on($transactionTable);
@@ -30,7 +30,7 @@ class UpdateWalletTransactionsTable extends Migration
     public function down()
     {
         $transactionModelClass = config('wallet.transaction_model');
-        $transactionTable = (new $transactionModelClass())->getTable();
+        $transactionTable = (new $transactionModelClass)->getTable();
         if (DB::getDriverName() !== 'sqlite') {
             Schema::table($transactionTable, function (Blueprint $table) {
                 $table->dropForeign(['origin_id']);

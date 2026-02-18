@@ -61,9 +61,9 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit tests --colors=always --testdox",
-        "static": "vendor/bin/phpstan analyse",
+        "static": "vendor/bin/phpstan analyse --memory-limit=256M",
         "post-update-cmd": [
-            "vendor/bin/phpstan analyse",
+            "composer static",
             "composer test"
         ]
     }

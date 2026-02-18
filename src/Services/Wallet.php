@@ -6,7 +6,7 @@ class Wallet
 {
     public function config($relativePath, $default)
     {
-        $path = "wallet";
+        $path = 'wallet';
 
         if ($relativePath) {
             $path .= ".$relativePath";
