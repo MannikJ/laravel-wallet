@@ -15,14 +15,14 @@ class TransactionTest extends TestCase
 {
     use RefreshDatabase;
 
-   #[Test]
+    #[Test]
     public function wallet()
     {
         $transaction = TransactionFactory::new()->create();
         $this->assertInstanceOf(Wallet::class, $transaction->wallet);
     }
 
-   #[Test]
+    #[Test]
     public function origin()
     {
         $origin = TransactionFactory::new()->create();
@@ -34,7 +34,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($origin->is($transaction->origin));
     }
 
-   #[Test]
+    #[Test]
     public function children()
     {
         $origin = TransactionFactory::new()->create();
@@ -46,7 +46,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($origin->is($transaction->origin));
     }
 
-   #[Test]
+    #[Test]
     public function reference()
     {
         $transaction = TransactionFactory::new()->create();
@@ -55,7 +55,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($transaction->wallet->is($transaction->reference));
     }
 
-   #[Test]
+    #[Test]
     public function update()
     {
         $transaction = TransactionFactory::new()->create(['amount' => 20, 'type' => 'deposit']);
@@ -70,7 +70,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(-20, $transaction->wallet->refresh()->balance);
     }
 
-   #[Test]
+    #[Test]
     public function create_converts_amount_to_absolute_value()
     {
         $wallet = WalletFactory::new()->create();
@@ -78,7 +78,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(20, $transaction->getAttributes()['amount']);
     }
 
-   #[Test]
+    #[Test]
     public function delete_model()
     {
         $transaction = TransactionFactory::new()->create([
@@ -96,7 +96,7 @@ class TransactionTest extends TestCase
         $this->assertEquals(-20, $transaction->wallet->refresh()->balance);
     }
 
-   #[Test]
+    #[Test]
     public function replace()
     {
         $timestamp = now()->subHours(1);
@@ -116,7 +116,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($replacement->origin->trashed());
     }
 
-   #[Test]
+    #[Test]
     public function generated_hash_is_set()
     {
         $transaction = TransactionFactory::new()->create();
@@ -127,7 +127,7 @@ class TransactionTest extends TestCase
         });
     }
 
-   #[Test]
+    #[Test]
     public function get_total_amount()
     {
         $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);
@@ -153,7 +153,7 @@ class TransactionTest extends TestCase
         $this->assertEquals($price, $transaction->getTotalAmount());
     }
 
-   #[Test]
+    #[Test]
     public function scope_select_total_amount()
     {
         $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);
@@ -177,7 +177,7 @@ class TransactionTest extends TestCase
         $this->assertEquals($price, $transaction->where('id', $transaction->id)->selectTotalAmount()->first()->getAttributes()['total_amount']);
     }
 
-   #[Test]
+    #[Test]
     public function get_total_amount_attribute()
     {
         $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);
@@ -201,5 +201,19 @@ class TransactionTest extends TestCase
         $price = 8;
         $this->assertEquals($price, $transaction->getTotalAmountAttribute());
         $this->assertEquals($price, $transaction->total_amount);
+    }
+
+    #[Test]
+    public function get_total_amount_on_soft_deleted_transaction()
+    {
+        $transaction = TransactionFactory::new()->deposit()->create(['amount' => '5']);
+        TransactionFactory::new()->count(3)->withdraw()->create([
+            'amount' => 1,
+            'origin_id' => $transaction->id,
+        ]);
+        $transaction->delete();
+        $this->assertTrue($transaction->trashed());
+
+        $this->assertEquals(0, $transaction->getTotalAmount());
     }
 }

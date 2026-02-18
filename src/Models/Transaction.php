@@ -151,6 +151,7 @@ class Transaction extends Model implements ValidModelConstructor
         // $totalAmount = $this->amount + $this->children()->get()->sum('amount');
         $totalAmount = $this->where('id', $this->id)->selectTotalAmount()->first();
         $totalAmount = $totalAmount ? Arr::get($totalAmount->getAttributes(), 'total_amount') : null;
+        $totalAmount = $totalAmount ?? 0;
         $this->attributes['total_amount'] = $totalAmount;
 
         return $totalAmount;
